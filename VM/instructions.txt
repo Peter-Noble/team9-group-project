@@ -1,0 +1,37 @@
+Install VirtualBox and Vagrant
+
+Initialise Vagrant: vagrant init
+
+Create the VM: vagrant up (or “vagrant up --provider virtualbox” if other hypervisors are present)
+
+Add vagrant-vbguest (which makes sure the virtualbox “guest additions” are installed and up to date every time the VM is started up)
+
+Add vagrant-cachier (which puts the package cache into a folder on the host PC, so that if you destroy and rebuild the VM, it won’t have to download updates from the Internet again - much quicker).
+
+Add this to Vagrantfile, after the line: config.vm.box = "ubuntu/xenial64"
+  if Vagrant.has_plugin?("vagrant-cachier")
+    # Configure cached packages to be shared between instances of the same base box.
+    # More info on http://fgrehm.viewdocs.io/vagrant-cachier/usage
+    config.cache.scope = :box
+
+    # For more information please check http://docs.vagrantup.com/v2/synced-folders/basic_usage.html
+  end
+
+
+See: http://fgrehm.viewdocs.io/vagrant-cachier/usage/
+
+Add this to the end of Vagrantfile (before the last “end”):
+  config.vm.provision "shell", path: "bootstrap.sh"
+
+Create the bootstrap.sh file:
+#!/bin/sh
+
+apt-get update
+apt-get install npm nodejs-legacy -y
+npm install -g mean-cli
+
+vagrant up
+
+vagrant halt - shuts down the VM
+vagrant reload - shuts down the VM, then starts it again (e.g. if Vagrantfile has been changed)
+vagrant provision - redo the provisioning steps
