@@ -2,4 +2,4 @@
 
 apt-get update
 apt-get install npm nodejs-legacy -y
-npm install -g mean-cli
+#npm install -g mean-cli
