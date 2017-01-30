@@ -1,6 +1,7 @@
 var express = require('express');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 var db = require('./db');
 var connect = require('connect-ensure-login');
 
@@ -9,9 +10,41 @@ passport.use(new Strategy(
         db.users.findByUsername(username, function(err, user) {
             if (err) { return cb(err); }
             if (!user) { return cb(null, false); }
+            if (user.type != "Local") { return cb(null, false); }
             if (user.password != password) { return cb(null, false); }
             return cb(null, user);
         });
+    })
+);
+
+passport.use(new FacebookStrategy({
+    clientID: "387146781677625",
+    clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
+    callbackURL: "http://127.0.0.1:8080/auth/facebook/callback"
+    }, function(token, refreshToken, profile, done) {
+            // asynchronous
+            process.nextTick(function() {
+                // find the user in the database based on their facebook id
+                db.users.findByUsername(profile.id, function(err, user) {
+
+                    // if there is an error, stop everything and return that
+                    if (err)
+                        return done(err);
+
+                    // if the user is found, then log them in
+                    // Don't log in if the id matches but the wront type of user
+                    if (user) {
+                        if (user.type != "Facebook") {
+                            return done(null, false);
+                        } else {
+                            return done(null, user); // user found, return that user
+                        }
+                    } else {
+                        return done(null, false);
+                    }
+
+                });
+            });
     })
 );
 
@@ -71,7 +104,8 @@ app.get("/api/auth/user", connect.ensureLoggedIn(),
         res.writeHead(200, {"Content-Type": "application/json"});
         var json = JSON.stringify({username: req.user.username,
                                    displayName: req.user.displayName,
-                                   email: req.user.email});
+                                   email: req.user.email,
+                                   type: req.user.type});
         res.end(json);
     })
 
@@ -87,6 +121,16 @@ app.post('/login',
     function(req, res) {
         res.redirect('/auth/secure.html');
     });
+
+// route for facebook authentication and login
+app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+
+// handle the callback after facebook has authenticated the user
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {
+        successRedirect : '/auth/secure.html',
+        failureRedirect : '/login.html'
+    }));
 
 // Logs out...
 app.get('/logout',

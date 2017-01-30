@@ -1,6 +1,25 @@
 var records = [
-    { id: 1, username: 'PeterN', password: 'secret', displayName: 'Peter', email: 'peter@noblesque.org.uk' },
-    { id: 2, username: 'Team9', password: 'team', displayName: '9', email: 'definitely valid@e.mail'}
+    {   id: 1,
+        username: 'PeterN',
+        password: 'secret',
+        displayName: 'Peter',
+        email: 'peter@noblesque.org.uk',
+        type: 'Local'
+    },
+    {   id: 2,
+        username: 'Team9',
+        password: 'team',
+        displayName: '9',
+        email: 'definitely valid@e.mail',
+        type: 'Local'
+    },
+    {   id: 3,
+        username: '1191156497671018',
+        password: '',
+        displayName: 'Peter(Facebook)',
+        email: 'peter@noblesque.org.uk',
+        type: 'Facebook'
+    },
 ];
 
 exports.findById = function(id, cb) {
