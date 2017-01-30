@@ -1,16 +1,29 @@
 <html ng-app="app">
-<head>
-  <title>Secure page</title>
-</head>
-<body>
+    <head>
+        <title>Secure page</title>
 
-<ng-view></ng-view>
+        <!-- Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
 
-<!-- Libraries -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
-<h1> LOGGED ON! </h1>
+        <script>
+            $(document).ready(function(){
+                $.get("/api/auth/user", function(data, status){
+                    $("h1").text("WELCOME " + data.displayName + "!");
+                });
+            });
+        </script>
+    </head>
 
-</body>
+    <body>
+
+        <ng-view></ng-view>
+
+        <h1> </h1>
+
+        <p> This is a secure page only accessable when logged in </p>
+
+    </body>
 </html>
