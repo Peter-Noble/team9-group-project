@@ -137,6 +137,30 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
     }
 )
 
+app.get("/auth/add-item", connect.ensureLoggedIn(),
+    function(req, res) {
+        res.render("add-item", { username : req.user.displayName })
+    }
+)
+
+app.get("/auth/home", connect.ensureLoggedIn(),
+    function(req, res) {
+        res.render("home", { username : req.user.displayName })
+    }
+)
+
+app.get("/registration",
+    function(req, res) {
+        res.render("registration", {})
+    }
+)
+
+app.get("/search-results",
+    function(req, res) {
+        res.render("search-results", {})
+    }
+)
+
 // route for facebook authentication and login
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 
