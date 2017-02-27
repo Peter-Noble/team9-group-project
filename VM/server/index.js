@@ -131,7 +131,7 @@ app.post('/login',
         res.redirect('/auth/profile');
     });
 
-app.get("/auth/profile",
+app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("profile", { username : req.user.displayName })
     }
