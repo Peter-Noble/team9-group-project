@@ -81,12 +81,21 @@ app.use(require('express-session')({ secret: 'team 9 secret', resave: false, sav
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Define routes.
+// pug
+app.set('views', './views');
+app.set('view engine', 'pug');
 
+
+// Define routes.
 
 app.get('/',
     function(req, res) {
-        res.redirect('index.html');
+        res.redirect('index');
+    });
+
+app.get('/index',
+    function(req, res){
+        res.render('index', {});
     });
 
 // Allow user to check if they are authenticated
@@ -112,7 +121,7 @@ app.get("/api/auth/user", connect.ensureLoggedIn(),
 // Reroute for passportjs purposes
 app.get('/login',
     function(req, res){
-        res.redirect('login.html');
+        res.render('login', {});
     });
 
 // Attempt to login

@@ -1,0 +1,16 @@
+extends include/layout.pug
+
+block content
+    ng-view
+
+    form(action="/login" method="post")
+        .form-group
+            label User name
+            input(type="text" class="form-control" name="username")
+        .form-group
+            label Password
+            input(type="password" class="form-control" name="password")
+        button(type="submit" class="btn btn-warning btn-lg") login
+
+    a(href="/auth/facebook" class="btn btn-primary")
+        span(class="fa fa-facebook") Facebook
