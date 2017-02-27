@@ -1,4 +1,27 @@
 extends include/layout.pug
 
 block content
-    h1 Home page, displayed after login
+    // The styling below is just to make the grid easier to understand for now
+    style(type="text/css").
+        .col-md-7 {
+          border: 1px solid black
+        }
+        .col-md-5 {
+          border: 1px solid black
+        }
+        .col-md-12 {
+          border: 1px solid black
+        }
+
+    div(class="container")
+        div(class="row")
+            h1 Home page, displayed after login
+        div(class="row")
+            div(class="col-md-7")
+                p Map goes here
+            div(class="col-md-5")
+                p Registration goes here
+        br
+        div(class="row")
+            div(class="col-md-12")
+                p Recently added goes here

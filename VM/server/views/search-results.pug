@@ -1,4 +1,26 @@
 extends include/layout.pug
 
 block content
-    h1 Page for displaying search results
+    // The styling below is just to make the grid easier to understand for now
+    style(type="text/css").
+        .col-md-4 {
+            border: 1px solid black
+        }
+        .col-md-8 {
+            border: 1px solid black
+        }
+        .col-md-12 {
+            border: 1px solid black
+        }
+
+    div(class="container")
+        div(class="row")
+            h1 Page for displaying search results
+        div(class="row")
+            div(class="col-md-12")
+                p Map goes here
+        div(class="row")
+            div(class="col-md-4")
+                p Refine search goes here
+            div(class="col-md-8")
+                p Search listings goes here
