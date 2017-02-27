@@ -128,8 +128,14 @@ app.get('/login',
 app.post('/login',
     passport.authenticate('local', { failureRedirect: 'login.html' }),
     function(req, res) {
-        res.redirect('/auth/secure.html');
+        res.redirect('/auth/profile');
     });
+
+app.get("/auth/profile",
+    function(req, res) {
+        res.render("profile", { username : req.user.displayName })
+    }
+)
 
 // route for facebook authentication and login
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
