@@ -7,13 +7,49 @@ var connect = require('connect-ensure-login');
 
 passport.use(new Strategy(
     function(username, password, cb) {
-        db.users.findByUsername(username, function(err, user) {
+		//sets up the connection details
+		var mysql      = require('mysql');
+		var connection = mysql.createConnection({
+		  host     : 'sql8.freemysqlhosting.net',
+		  user     : 'sql8161701',
+		  password : 'LdhucPKNyv',
+		  database : 'sql8161701'
+		});
+		//attempts a connection
+		connection.connect(function(err) {
+			// in case of error
+			if(err){
+				console.log(err.stack);
+				console.log(err.fatal);
+			}
+		});
+		//attempts a query to check user details and returns their Forename
+		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID' , function(err, rows, fields) {
+		  if (!err) {
+			user = {
+				id: rows[0].User_ID,
+				username: rows[0].Username,
+				password: rows[0].Password,
+				displayName: rows[0].Forename,
+				email: rows[0].Email,
+				type: 'Local'
+			};
+			console.log(rows);
+			return cb(null, user);
+		  } else {
+			console.log('Error while performing Query.');
+		    return cb(null, false); 
+		  }
+		});
+		//closes the connection
+		connection.end();
+		/*         db.users.findByUsername(username, function(err, user) {
             if (err) { return cb(err); }
             if (!user) { return cb(null, false); }
             if (user.type != "Local") { return cb(null, false); }
             if (user.password != password) { return cb(null, false); }
             return cb(null, user);
-        });
+        }); */
     })
 );
 
