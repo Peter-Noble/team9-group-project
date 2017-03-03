@@ -25,7 +25,7 @@ passport.use(new Strategy(
 		});
         console.log("Connection made")
 		//attempts a query to check user details and returns their Forename
-		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID' ,
+		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Local\'',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
                     console.log(rows)
@@ -91,7 +91,7 @@ passport.use(new FacebookStrategy({
 // serializing, and querying the user record by ID from the database when
 // deserializing.
 passport.serializeUser(function(user, cb) {
-    cb(null, user.id);
+    cb(null, {id: user.id, type: user.type});
 });
 
 passport.deserializeUser(function(id, cb) {
@@ -111,8 +111,10 @@ passport.deserializeUser(function(id, cb) {
 			}
 		});
         console.log("Connection made")
+        console.log(id)
 		//attempts a query to check user details and returns their Forename
-		connection.query('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id ,
+        console.log('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = ' + id.type)
+		connection.query('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = "' + id.type + '"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
                     console.log(rows)
@@ -122,14 +124,14 @@ passport.deserializeUser(function(id, cb) {
         				password: rows[0].Password,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
-        				type: 'Local'
+        				type: rows[0].Type
         			};
         			console.log(rows);
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
-                    console.log("Error! User doesn't exist")
+                    console.log("deserialize - Error! User doesn't exist")
     		    } else {
-    			    console.log('Error while performing Query.');
+    			    console.log('deserialize - Error while performing Query.');
     		        return cb(null, false);
     		    }
 		    }
