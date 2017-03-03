@@ -35,7 +35,7 @@ passport.use(new Strategy(
         				password: rows[0].Password,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
-        				type: 'Local'
+        				type: rows[0].Type
         			};
         			console.log(rows);
         			return cb(null, user);
@@ -56,30 +56,50 @@ passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
     callbackURL: "http://127.0.0.1:8080/auth/facebook/callback"
-    }, function(token, refreshToken, profile, done) {
-            // asynchronous
-            process.nextTick(function() {
-                // find the user in the database based on their facebook id
-                db.users.findByUsername(profile.id, function(err, user) {
-
-                    // if there is an error, stop everything and return that
-                    if (err)
-                        return done(err);
-
-                    // if the user is found, then log them in
-                    // Don't log in if the id matches but the wront type of user
-                    if (user) {
-                        if (user.type != "Facebook") {
-                            return done(null, false);
-                        } else {
-                            return done(null, user); // user found, return that user
-                        }
-                    } else {
-                        return done(null, false);
-                    }
-
-                });
-            });
+    }, function(token, refreshToken, profile, cb) {
+        // asynchronous
+        process.nextTick(function() {
+    		//sets up the connection details
+    		var connection = mysql.createConnection({
+    		  host     : 'sql8.freemysqlhosting.net',
+    		  user     : 'sql8161701',
+    		  password : 'LdhucPKNyv',
+    		  database : 'sql8161701'
+    		});
+    		//attempts a connection
+    		connection.connect(function(err) {
+    			// in case of error
+    			if(err){
+    				console.log(err.stack);
+    				console.log(err.fatal);
+    			}
+    		});
+            console.log("Connection made")
+    		//attempts a query to check user details and returns their Forename
+    		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
+                function(err, rows, fields) {
+                    if (!err && rows.length > 0) {
+                        console.log(rows)
+            			user = {
+            				id: rows[0].User_ID,
+            				username: rows[0].Username,
+            				displayName: rows[0].Forename,
+            				email: rows[0].Email,
+            				type: rows[0].Type
+            			};
+            			console.log(rows);
+            			return cb(null, user);
+                    } else if (!err && rows.length == 0) {
+                        console.log("Error! User doesn't exist")
+        		    } else {
+        			    console.log('Error while performing Query.');
+        		        return cb(null, false);
+        		    }
+    		    }
+            );
+    		//closes the connection
+    		connection.end();
+        });
     })
 );
 
