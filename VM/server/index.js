@@ -4,11 +4,11 @@ var Strategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var db = require('./db');
 var connect = require('connect-ensure-login');
+var mysql = require('mysql');
 
 passport.use(new Strategy(
     function(username, password, cb) {
 		//sets up the connection details
-		var mysql      = require('mysql');
 		var connection = mysql.createConnection({
 		  host     : 'sql8.freemysqlhosting.net',
 		  user     : 'sql8161701',
@@ -23,33 +23,32 @@ passport.use(new Strategy(
 				console.log(err.fatal);
 			}
 		});
+        console.log("Connection made")
 		//attempts a query to check user details and returns their Forename
-		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID' , function(err, rows, fields) {
-		  if (!err) {
-			user = {
-				id: rows[0].User_ID,
-				username: rows[0].Username,
-				password: rows[0].Password,
-				displayName: rows[0].Forename,
-				email: rows[0].Email,
-				type: 'Local'
-			};
-			console.log(rows);
-			return cb(null, user);
-		  } else {
-			console.log('Error while performing Query.');
-		    return cb(null, false); 
-		  }
-		});
+		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID' ,
+            function(err, rows, fields) {
+                if (!err && rows.length > 0) {
+                    console.log(rows)
+        			user = {
+        				id: rows[0].User_ID,
+        				username: rows[0].Username,
+        				password: rows[0].Password,
+        				displayName: rows[0].Forename,
+        				email: rows[0].Email,
+        				type: 'Local'
+        			};
+        			console.log(rows);
+        			return cb(null, user);
+                } else if (!err && rows.length == 0) {
+                    console.log("Error! User doesn't exist")
+    		    } else {
+    			    console.log('Error while performing Query.');
+    		        return cb(null, false);
+    		    }
+		    }
+        );
 		//closes the connection
 		connection.end();
-		/*         db.users.findByUsername(username, function(err, user) {
-            if (err) { return cb(err); }
-            if (!user) { return cb(null, false); }
-            if (user.type != "Local") { return cb(null, false); }
-            if (user.password != password) { return cb(null, false); }
-            return cb(null, user);
-        }); */
     })
 );
 
@@ -96,10 +95,52 @@ passport.serializeUser(function(user, cb) {
 });
 
 passport.deserializeUser(function(id, cb) {
-    db.users.findById(id, function (err, user) {
+		//sets up the connection details
+		var connection = mysql.createConnection({
+		  host     : 'sql8.freemysqlhosting.net',
+		  user     : 'sql8161701',
+		  password : 'LdhucPKNyv',
+		  database : 'sql8161701'
+		});
+		//attempts a connection
+		connection.connect(function(err) {
+			// in case of error
+			if(err){
+				console.log(err.stack);
+				console.log(err.fatal);
+			}
+		});
+        console.log("Connection made")
+		//attempts a query to check user details and returns their Forename
+		connection.query('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id ,
+            function(err, rows, fields) {
+                if (!err && rows.length > 0) {
+                    console.log(rows)
+        			user = {
+        				id: rows[0].User_ID,
+        				username: rows[0].Username,
+        				password: rows[0].Password,
+        				displayName: rows[0].Forename,
+        				email: rows[0].Email,
+        				type: 'Local'
+        			};
+        			console.log(rows);
+        			return cb(null, user);
+                } else if (!err && rows.length == 0) {
+                    console.log("Error! User doesn't exist")
+    		    } else {
+    			    console.log('Error while performing Query.');
+    		        return cb(null, false);
+    		    }
+		    }
+        );
+		//closes the connection
+		connection.end();
+
+    /*db.users.findById(id, function (err, user) {
         if (err) { return cb(err); }
         cb(null, user);
-    });
+    });*/
 });
 
 // Create a new Express application.
