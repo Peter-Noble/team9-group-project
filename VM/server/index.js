@@ -32,7 +32,6 @@ passport.use(new Strategy(
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
-        				password: rows[0].Password,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
         				type: rows[0].Type
@@ -141,7 +140,6 @@ passport.deserializeUser(function(id, cb) {
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
-        				password: rows[0].Password,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
         				type: rows[0].Type
