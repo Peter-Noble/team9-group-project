@@ -1,0 +1,22 @@
+.row
+    .col-md-6
+        form(method='POST' action='')
+            .form-group
+                label(for='itemName') Item Name:
+                input#itemName.form-control(type='text', placeholder='Item Name' name='itemName')
+            .form-group
+                label(for='location') Location:
+                input#location.form-control(type='text', placeholder='Postcode' name='location')
+            .form-group
+                // Just a placeholder for now, can make more detailed later
+                label(for='prefTimes') Preferred pick-up time:
+                select#prefTimes.form-control(name='prefTimes')
+                    option(value='morning') Morning
+                    option(value='afternoon') Afternoon
+                    option(value='Evening') Evening
+            .form-group
+                label(for='description') Description:
+                input#description.form-control(type='text', placeholder='Description' name='description')
+            button.btn.btn-primary(type='submit') List item
+    .col-md-6
+        p Picture upload here?
