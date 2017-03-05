@@ -1,14 +1,14 @@
-div(class="navbar navbar-static-top")
+.navbar.navbar-static-top
     .navbar-inner
         .nav
             .col-xs-2
                 h1 Give&Go
             .col-xs-8
-                div#custom-search-input
-                    div(class="input-group")
+                #custom-search-input
+                    .input-group
                         input(type="text" class="form-control input-lg" placeholder="Search")
                         span(class="input-group-btn")
                             button(class="btn btn-info btn-lg" type="button")
                                 i(class="glyphicon glyphicon-search")
             .col-xs-2
-                button(class="btn" type="button") Register
+                a(class="btn btn-primary" role="button" href="/registration") Register
