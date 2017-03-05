@@ -1,14 +1,29 @@
 .navbar.navbar-static-top
     .navbar-inner
         .nav
-            .col-xs-2
-                h1 Give&Go
-            .col-xs-8
+            .col-sm-2
+                if authenticated
+                    a(href="/auth/home")
+                        h1 Give&Go
+                else
+
+                    a(href="/index")
+                        h1 Give&Go
+            .col-sm-8
                 #custom-search-input
                     .input-group
                         input(type="text" class="form-control input-lg" placeholder="Search")
                         span(class="input-group-btn")
                             button(class="btn btn-info btn-lg" type="button")
                                 i(class="glyphicon glyphicon-search")
-            .col-xs-2
-                a(class="btn btn-primary" role="button" href="/registration") Register
+            if authenticated
+                .col-sm-1
+                    a(class="btn btn-primary" role="button" href="/auth/add-item") Add item
+                .col-sm-1
+                    a(class="btn btn-primary" role="button" href="/auth/profile") Profile
+            else
+
+                .col-sm-1
+                    a(class="btn btn-primary" role="button" href="/registration") Register
+                .col-sm-1
+                    a(class="btn btn-primary" role="button" href="/login") Login

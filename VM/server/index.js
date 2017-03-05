@@ -179,7 +179,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // pug
-app.set('views', './views');
+app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 
 
@@ -192,7 +192,7 @@ app.get('/',
 
 app.get('/index',
     function(req, res){
-        res.render('index', {});
+        res.render('index', { authenticated: req.user ? true : false });
     });
 
 // Allow user to check if they are authenticated
@@ -218,7 +218,7 @@ app.get("/api/auth/user", connect.ensureLoggedIn(),
 // Reroute for passportjs purposes
 app.get('/login',
     function(req, res){
-        res.render('login', {});
+        res.render('login', { authenticated: req.user ? true : false });
     });
 
 // Attempt to login
@@ -230,31 +230,34 @@ app.post('/login',
 
 app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
-        res.render("profile", { username : req.user.displayName })
+        res.render("profile", { username : req.user.displayName,
+                                authenticated: req.user ? true : false })
     }
 )
 
 app.get("/auth/add-item", connect.ensureLoggedIn(),
     function(req, res) {
-        res.render("add-item", { username : req.user.displayName })
+        res.render("add-item", { username : req.user.displayName,
+                                 authenticated: req.user ? true : false })
     }
 )
 
 app.get("/auth/home", connect.ensureLoggedIn(),
     function(req, res) {
-        res.render("home", { username : req.user.displayName })
+        res.render("home", { username : req.user.displayName,
+                             authenticated: req.user ? true : false })
     }
 )
 
 app.get("/registration",
     function(req, res) {
-        res.render("registration", {})
+        res.render("registration", { authenticated: req.user ? true : false })
     }
 )
 
 app.get("/search-results",
     function(req, res) {
-        res.render("search-results", {})
+        res.render("search-results", { authenticated: req.user ? true : false })
     }
 )
 
