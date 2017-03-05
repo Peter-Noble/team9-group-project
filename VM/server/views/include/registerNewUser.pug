@@ -1,0 +1,21 @@
+.row
+    .col-md-6
+        form(method='POST' action='/register')
+            .form-group
+                label(for='name') Name:
+                input#name.form-control(type='text', placeholder='first and last' name='name')
+            .form-group
+                label(for='email') Email:
+                input#email.form-control(type='email', placeholder='name@email.com' name='email')
+            .form-group
+                label(for='postcode') Post code:
+                input#postcode.form-control(type='text', placeholder='AB12 3CD' name='postcode')
+            .form-group
+                label(for='pw') Password:
+                input#pw.form-control(type='password' name='password')
+            .form-group
+                label(for='pw2') Confirm Password:
+                input#pw2.form-control(type='password' name='confirmPassword')
+            button.btn.btn-primary(type='submit') Sign up
+    .col-md-6
+        button.btn.btn-primary Sign up with Facebook

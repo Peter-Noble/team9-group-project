@@ -255,6 +255,22 @@ app.get("/registration",
     }
 )
 
+app.post('/register',
+    function(req, res) {
+        console.log(req.body.name);
+        console.log(req.body.email);
+        console.log(req.body.postcode);
+        console.log(req.body.password);
+        console.log(req.body.confirmPassword);
+        var success = true;
+        if (success) {
+            // Authenticate then...
+            res.redirect("/auth/home");
+        } else {
+            res.redirect("#");
+        }
+    })
+
 app.get("/search-results",
     function(req, res) {
         res.render("search-results", { authenticated: req.user ? true : false })
