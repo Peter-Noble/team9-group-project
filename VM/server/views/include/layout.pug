@@ -1,6 +1,8 @@
 html
-    include header.pug
+    include head.pug
     block scripts
     body
-        block content
+        include header.pug
+        .container
+            block content
     include footer.pug

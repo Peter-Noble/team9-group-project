@@ -275,6 +275,7 @@ app.get('/logout',
         res.redirect('/');
     });
 
+app.use('/styles', express.static("styles"));
 // Serve any files in the public directory.
 app.use(express.static("public"));
 // Only server files in the auth directory if the user is logged in.

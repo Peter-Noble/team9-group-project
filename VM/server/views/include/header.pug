@@ -1,13 +1,14 @@
-head
-    title Give&Go
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js")
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js")
-
-    // latest compiled and minified css
-    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous")
-    // optional theme
-    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous")
-    // latest compiled and minified javascript
-    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous")
-
-    h1 Give&Go header!
+div(class="navbar navbar-static-top")
+    .navbar-inner
+        .nav
+            .col-xs-2
+                h1 Give&Go
+            .col-xs-8
+                div#custom-search-input
+                    div(class="input-group")
+                        input(type="text" class="form-control input-lg" placeholder="Search")
+                        span(class="input-group-btn")
+                            button(class="btn btn-info btn-lg" type="button")
+                                i(class="glyphicon glyphicon-search")
+            .col-xs-2
+                button(class="btn" type="button") Register
