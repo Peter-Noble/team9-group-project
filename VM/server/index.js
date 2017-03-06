@@ -2,29 +2,34 @@ var express = require('express');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
-var db = require('./db');
 var connect = require('connect-ensure-login');
 var mysql = require('mysql');
 
+var sqlDetails = {
+  host     : 'sql8.freemysqlhosting.net',
+  user     : 'sql8161701',
+  password : 'LdhucPKNyv',
+  database : 'sql8161701'
+}
+
+function makeSQLConnection() {
+    /* Make a connection to the sql database and handle any errors */
+    //sets up the connection details
+    var connection = mysql.createConnection(sqlDetails);
+    //attempts a connection
+    connection.connect(function(err) {
+        // in case of error
+        if(err){
+            console.log(err.stack);
+            console.log(err.fatal);
+        }
+    });
+    return connection
+}
+
 passport.use(new Strategy(
     function(username, password, cb) {
-		//sets up the connection details
-		var connection = mysql.createConnection({
-		  host     : 'sql8.freemysqlhosting.net',
-		  user     : 'sql8161701',
-		  password : 'LdhucPKNyv',
-		  database : 'sql8161701'
-		});
-		//attempts a connection
-		connection.connect(function(err) {
-			// in case of error
-			if(err){
-				console.log(err.stack);
-				console.log(err.fatal);
-			}
-		});
-        console.log("Connection made")
-		//attempts a query to check user details and returns their Forename
+		var connection = makeSQLConnection();
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Local\'',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
@@ -58,23 +63,7 @@ passport.use(new FacebookStrategy({
     }, function(token, refreshToken, profile, cb) {
         // asynchronous
         process.nextTick(function() {
-    		//sets up the connection details
-    		var connection = mysql.createConnection({
-    		  host     : 'sql8.freemysqlhosting.net',
-    		  user     : 'sql8161701',
-    		  password : 'LdhucPKNyv',
-    		  database : 'sql8161701'
-    		});
-    		//attempts a connection
-    		connection.connect(function(err) {
-    			// in case of error
-    			if(err){
-    				console.log(err.stack);
-    				console.log(err.fatal);
-    			}
-    		});
-            console.log("Connection made")
-    		//attempts a query to check user details and returns their Forename
+    		var connection = makeSQLConnection();
     		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
                 function(err, rows, fields) {
                     if (!err && rows.length > 0) {
@@ -114,24 +103,7 @@ passport.serializeUser(function(user, cb) {
 });
 
 passport.deserializeUser(function(id, cb) {
-		//sets up the connection details
-		var connection = mysql.createConnection({
-		  host     : 'sql8.freemysqlhosting.net',
-		  user     : 'sql8161701',
-		  password : 'LdhucPKNyv',
-		  database : 'sql8161701'
-		});
-		//attempts a connection
-		connection.connect(function(err) {
-			// in case of error
-			if(err){
-				console.log(err.stack);
-				console.log(err.fatal);
-			}
-		});
-        console.log("Connection made")
-        console.log(id)
-		//attempts a query to check user details and returns their Forename
+		var connection = makeSQLConnection();
         console.log('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = ' + id.type)
 		connection.query('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = "' + id.type + '"',
             function(err, rows, fields) {
@@ -156,11 +128,6 @@ passport.deserializeUser(function(id, cb) {
         );
 		//closes the connection
 		connection.end();
-
-    /*db.users.findById(id, function (err, user) {
-        if (err) { return cb(err); }
-        cb(null, user);
-    });*/
 });
 
 // Create a new Express application.
@@ -228,6 +195,7 @@ app.post('/login',
         res.redirect('/auth/profile');
     });
 
+// Users account details
 app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("profile", { username : req.user.displayName,
@@ -235,6 +203,7 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
     }
 )
 
+// Add a new item to give away
 app.get("/auth/add-item", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("add-item", { username : req.user.displayName,
@@ -242,6 +211,7 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
     }
 )
 
+// Index page but for logged in clients
 app.get("/auth/home", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("home", { username : req.user.displayName,
@@ -249,34 +219,17 @@ app.get("/auth/home", connect.ensureLoggedIn(),
     }
 )
 
+// Register a new user full screen
 app.get("/registration",
     function(req, res) {
         res.render("registration", { authenticated: req.user ? true : false })
     }
 )
 
+// Recieves requests from forms to create new user accounts
 app.post('/register',
     function(req, res) {
-        console.log(req.body.email);
-        console.log(req.body.password);
-        console.log(req.body.confirmPassword);
-
-		//sets up the connection details
-		var connection = mysql.createConnection({
-		  host     : 'sql8.freemysqlhosting.net',
-		  user     : 'sql8161701',
-		  password : 'LdhucPKNyv',
-		  database : 'sql8161701'
-		});
-		//attempts a connection
-		connection.connect(function(err) {
-			// in case of error
-			if(err){
-				console.log(err.stack);
-				console.log(err.fatal);
-			}
-		});
-
+		var connection = makeSQLConnection();
         connection.query("INSERT INTO `sql8161701`.`Profiles` (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
             function(err, rows, fields) {
                 console.log("INSERT INTO  `sql8161701`.`Users` (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", " + req.body.username + ", " + req.body.email + ", '" + req.body.password + "', 'Local')");
@@ -296,6 +249,7 @@ app.post('/register',
         }
     })
 
+// Result of user searching in the top bar
 app.get("/search-results",
     function(req, res) {
         res.render("search-results", { authenticated: req.user ? true : false })
@@ -323,7 +277,5 @@ app.use('/styles', express.static("styles"));
 app.use('/js', express.static("js"));
 // Serve any files in the public directory.
 app.use(express.static("public"));
-// Only server files in the auth directory if the user is logged in.
-app.use("/auth", [connect.ensureLoggedIn(), express.static('auth')]);
 
 app.listen(8080);
