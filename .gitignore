@@ -56,3 +56,5 @@ jspm_packages
 .vagrant/
 
 # End of https://www.gitignore.io/api/node,vagrant
+
+VM/server/sqlCredentials\.js
