@@ -190,7 +190,7 @@ app.get('/login',
 
 // Attempt to login
 app.post('/login',
-    passport.authenticate('local', { failureRedirect: 'login.html' }),
+    passport.authenticate('local', { failureRedirect: 'login' }),
     function(req, res) {
         res.redirect('/auth/profile');
     });
