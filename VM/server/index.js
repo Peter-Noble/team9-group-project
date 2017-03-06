@@ -5,12 +5,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var connect = require('connect-ensure-login');
 var mysql = require('mysql');
 
-var sqlDetails = {
-  host     : 'mysql.dur.ac.uk',
-  user     : 'hgwb76',
-  password : 'd87urham',
-  database : 'Xhgwb76_GiveandGo'
-}
+var sqlDetails = require('./sqlCredentials');
 
 function makeSQLConnection() {
     /* Make a connection to the sql database and handle any errors */
