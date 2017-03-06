@@ -257,11 +257,36 @@ app.get("/registration",
 
 app.post('/register',
     function(req, res) {
-        console.log(req.body.name);
         console.log(req.body.email);
-        console.log(req.body.postcode);
         console.log(req.body.password);
         console.log(req.body.confirmPassword);
+
+		//sets up the connection details
+		var connection = mysql.createConnection({
+		  host     : 'sql8.freemysqlhosting.net',
+		  user     : 'sql8161701',
+		  password : 'LdhucPKNyv',
+		  database : 'sql8161701'
+		});
+		//attempts a connection
+		connection.connect(function(err) {
+			// in case of error
+			if(err){
+				console.log(err.stack);
+				console.log(err.fatal);
+			}
+		});
+
+        connection.query("INSERT INTO `sql8161701`.`Profiles` (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
+            function(err, rows, fields) {
+                console.log("INSERT INTO  `sql8161701`.`Users` (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", " + req.body.username + ", " + req.body.email + ", '" + req.body.password + "', 'Local')");
+                connection.query("INSERT INTO  `sql8161701`.`Users` (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local')",
+                    function(err, rows, fields) {
+                        console.log("New user");
+                    }
+                );
+            }
+        );
         var success = true;
         if (success) {
             // Authenticate then...
@@ -295,6 +320,7 @@ app.get('/logout',
     });
 
 app.use('/styles', express.static("styles"));
+app.use('/js', express.static("js"));
 // Serve any files in the public directory.
 app.use(express.static("public"));
 // Only server files in the auth directory if the user is logged in.

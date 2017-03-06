@@ -1,21 +1,25 @@
+script(src="/js/validateRegistration.js")
 .row
     .col-md-6
-        form(method='POST' action='/register')
-            .form-group
+        form(method='POST' action='/register')#registration-form
+            .control-group
+                label(for='username') Username:
+                input#username.form-control(type='text', placeholder='Username' name='username')
+            .control-group
                 label(for='name') Name:
-                input#name.form-control(type='text', placeholder='first and last' name='name')
-            .form-group
+                input#name.form-control(type='text', placeholder='Forename' name='name')
+            .control-group
                 label(for='email') Email:
                 input#email.form-control(type='email', placeholder='name@email.com' name='email')
-            .form-group
+            .control-group
                 label(for='postcode') Post code:
                 input#postcode.form-control(type='text', placeholder='AB12 3CD' name='postcode')
-            .form-group
+            .control-group
                 label(for='pw') Password:
-                input#pw.form-control(type='password' name='password')
-            .form-group
+                input#password.form-control(type='password' name='password')
+            .control-group
                 label(for='pw2') Confirm Password:
-                input#pw2.form-control(type='password' name='confirmPassword')
+                input#confirmPassword.form-control(type='password' name='confirmPassword')
             button.btn.btn-primary(type='submit') Sign up
     .col-md-6
         button.btn.btn-primary Sign up with Facebook
