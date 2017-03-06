@@ -6,10 +6,10 @@ var connect = require('connect-ensure-login');
 var mysql = require('mysql');
 
 var sqlDetails = {
-  host     : 'sql8.freemysqlhosting.net',
-  user     : 'sql8161701',
-  password : 'LdhucPKNyv',
-  database : 'sql8161701'
+  host     : 'mysql.dur.ac.uk',
+  user     : 'hgwb76',
+  password : 'd87urham',
+  database : 'Xhgwb76_GiveandGo'
 }
 
 function makeSQLConnection() {
@@ -30,7 +30,7 @@ function makeSQLConnection() {
 passport.use(new Strategy(
     function(username, password, cb) {
 		var connection = makeSQLConnection();
-		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Local\'',
+		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
                     console.log(rows)
