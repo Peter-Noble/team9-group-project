@@ -230,10 +230,10 @@ app.get("/registration",
 app.post('/register',
     function(req, res) {
 		var connection = makeSQLConnection();
-        connection.query("INSERT INTO `sql8161701`.`Profiles` (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
+        connection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
             function(err, rows, fields) {
-                console.log("INSERT INTO  `sql8161701`.`Users` (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", " + req.body.username + ", " + req.body.email + ", '" + req.body.password + "', 'Local')");
-                connection.query("INSERT INTO  `sql8161701`.`Users` (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local')",
+                console.log("INSERT INTO  Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", " + req.body.username + ", " + req.body.email + ", '" + req.body.password + "', 'Local')");
+                connection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local')",
                     function(err, rows, fields) {
                         console.log("New user");
                     }
