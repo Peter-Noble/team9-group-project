@@ -1,20 +1,24 @@
+script(src="/js/validateNewItem.js")
 .row
     .col-md-6
-        form(method='POST' action='')
-            .form-group
-                label(for='itemName') Item Name:
+        form(method='POST' action='/auth/add-item')#add-item-form
+            .control-group
+                label(for='itemName') Item name:
                 input#itemName.form-control(type='text', placeholder='Item Name' name='itemName')
-            .form-group
+            .control-group
                 label(for='location') Location:
                 input#location.form-control(type='text', placeholder='Postcode' name='location')
-            .form-group
+            .control-group
+                label(for='expiry') Expiry date:
+                input#expiry.form-control(type='date' name='expiry')
+            .control-group
                 // Just a placeholder for now, can make more detailed later
                 label(for='prefTimes') Preferred pick-up time:
                 select#prefTimes.form-control(name='prefTimes')
                     option(value='morning') Morning
                     option(value='afternoon') Afternoon
                     option(value='Evening') Evening
-            .form-group
+            .control-group
                 label(for='description') Description:
                 input#description.form-control(type='text', placeholder='Description' name='description')
             button.btn.btn-primary(type='submit') List item
