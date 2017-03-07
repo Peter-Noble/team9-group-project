@@ -4,6 +4,7 @@ var Strategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var connect = require('connect-ensure-login');
 var mysql = require('mysql');
+var UKPostcodes = require('uk-postcodes-node');
 
 var sqlDetails = require('./sqlCredentials');
 
@@ -203,6 +204,29 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("add-item", { username : req.user.displayName,
                                  authenticated: req.user ? true : false })
+    }
+)
+
+// Receives request to add new item to the listings
+app.post("/add-item", connect.ensureLoggedIn(),
+    function(req, res) {
+        // need to get user id
+        var postcode = req.body.location;
+        UKPostcodes.getPostcode(postcode, function(error, data) {
+            var locationPoint = "POINT(" + data.geo.lat + " " + data.geo.lng + ")";
+            var connection = makeSQLConnection();
+                connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Expiry`, `Location`) VALUES (NULL, '3', '" + req.body.itemName + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
+                    function(err, rows, fields) {
+                        console.log(err);
+                    }
+                );
+                var success = true;
+                if (success) {
+                    res.redirect("/auth/home"); // for now
+                } else {
+                    res.redirect("#");
+                }
+        });
     }
 )
 
