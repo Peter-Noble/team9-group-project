@@ -55,35 +55,53 @@ passport.use(new Strategy(
 passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
-    callbackURL: "http://127.0.0.1:8080/auth/facebook/callback"
+    callbackURL: "http://127.0.0.1:8080/auth/facebook/callback",
+    profileFields: ['id', 'displayName', 'emails']
     }, function(token, refreshToken, profile, cb) {
-        // asynchronous
-        process.nextTick(function() {
-    		var connection = makeSQLConnection();
-    		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
-                function(err, rows, fields) {
-                    if (!err && rows.length > 0) {
-                        console.log(rows)
-            			user = {
-            				id: rows[0].User_ID,
-            				username: rows[0].Username,
-            				displayName: rows[0].Forename,
-            				email: rows[0].Email,
-            				type: rows[0].Type
-            			};
-            			console.log(rows);
-            			return cb(null, user);
-                    } else if (!err && rows.length == 0) {
-                        console.log("Error! User doesn't exist")
-        		    } else {
-        			    console.log('Error while performing Query.');
-        		        return cb(null, false);
-        		    }
+		var connection = makeSQLConnection();
+		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
+            function(err, rows, fields) {
+                if (!err && rows.length > 0) {
+                    console.log(rows)
+        			user = {
+        				id: rows[0].User_ID,
+        				username: rows[0].Username,
+        				displayName: rows[0].Forename,
+        				email: rows[0].Email,
+        				type: rows[0].Type
+        			};
+        			return cb(null, user);
+                } else if (!err && rows.length == 0) {
+                    // Create profile and user
+
+            		var insertConnection = makeSQLConnection();
+
+                    insertConnection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + profile.displayName + "', '');",
+                        function(err, profileRows, fields) {
+                            var usersConnections = makeSQLConnection();
+                            usersConnections.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + profileRows.insertId + ", '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')",
+                                function(err, userRows, fields) {
+                                    user = {
+                                        id: profileRows.insertId,
+                                        username: profile.id,
+                                        displayName: profile.displayName,
+                                        email: profile.emails[0],
+                                        type: "Facebook"
+                                    }
+                                    usersConnections.end();
+                                    return cb(null, user);
+                                }
+                            )
+                            insertConnection.end();
+                        }
+                    )
+    		    } else {
+    			    console.log('Error while performing Query.');
+    		        return cb(null, false);
     		    }
-            );
-    		//closes the connection
-    		connection.end();
-        });
+                connection.end();
+		    }
+        );
     })
 );
 
@@ -116,6 +134,7 @@ passport.deserializeUser(function(id, cb) {
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     console.log("deserialize - Error! User doesn't exist")
+                    return cb(null, false);
     		    } else {
     			    console.log('deserialize - Error while performing Query.');
     		        return cb(null, false);
@@ -251,7 +270,6 @@ app.post('/register',
 		var connection = makeSQLConnection();
         connection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
             function(err, rows, fields) {
-                console.log("INSERT INTO  Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", " + req.body.username + ", " + req.body.email + ", '" + req.body.password + "', 'Local')");
                 connection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local')",
                     function(err, rows, fields) {
                         console.log("New user");
@@ -278,12 +296,43 @@ app.get("/search-results",
 // route for facebook authentication and login
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 
+app.get('/auth/facebook-additional-info', connect.ensureLoggedIn(),
+    function(req, res) {
+		var connection = makeSQLConnection();
+        connection.query('SELECT * from Profiles, Users WHERE Username = "' + req.user.username + '" AND Users.Type = \'Facebook\' AND Users.User_ID = Profiles.User_ID',
+            function(err, rows, fields) {
+                if (rows.length == 0  || rows[0].Post_Code == null || rows[0].Post_Code == "") {
+                    res.render("facebook-additional-info", {})
+                } else {
+                    res.redirect("/auth/home");
+                }
+            }
+        )
+    })
+
 // handle the callback after facebook has authenticated the user
 app.get('/auth/facebook/callback',
     passport.authenticate('facebook', {
-        successRedirect : '/auth/profile',
+        successRedirect : '/auth/facebook-additional-info',
         failureRedirect : '/login'
     }));
+
+app.post('/update-postcode',
+    function(req, res) {
+		var connection = makeSQLConnection();
+        connection.query("UPDATE Profiles SET Post_Code = '" + req.body.postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
+            function(err, rows, fields) {
+                if (err) {
+                    console.log(err.stack);
+                    console.log(err.fatal);
+                    req.logout();
+                    res.redirect("/login");
+                } else {
+                    res.redirect("/auth/home");
+                }
+            }
+        );
+    })
 
 // Logs out...
 app.get('/logout',
