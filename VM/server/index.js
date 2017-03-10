@@ -29,7 +29,6 @@ passport.use(new Strategy(
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
-                    console.log(rows)
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
@@ -38,7 +37,6 @@ passport.use(new Strategy(
         				type: rows[0].Type,
                         postcode: rows[0].Post_code
         			};
-        			console.log(rows);
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     console.log("Error! User doesn't exist")
@@ -63,7 +61,6 @@ passport.use(new FacebookStrategy({
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
-                    console.log(rows)
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
@@ -120,20 +117,17 @@ passport.serializeUser(function(user, cb) {
 
 passport.deserializeUser(function(id, cb) {
 		var connection = makeSQLConnection();
-        console.log('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = ' + id.type)
 		connection.query('SELECT * from Profiles, Users WHERE Users.User_ID = Profiles.User_ID AND Profiles.User_ID = ' + id.id + ' AND Users.Type = "' + id.type + '"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
-                    console.log(rows)
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
         				type: rows[0].Type,
-                        postcode: rows[0].Post_code
+                        postcode: rows[0].Post_Code
         			};
-        			console.log(rows);
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     console.log("deserialize - Error! User doesn't exist")
@@ -216,7 +210,6 @@ app.post('/login',
 // Users account details
 app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
-        console.log(req.user.postcode);
         res.render("profile", { username : req.user.displayName,
                                 authenticated: req.user ? true : false,
                                 postcodeUpdate: req.user.postcode == "" || req.user.postcode == null })
