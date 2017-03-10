@@ -35,7 +35,8 @@ passport.use(new Strategy(
         				username: rows[0].Username,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
-        				type: rows[0].Type
+        				type: rows[0].Type,
+                        postcode: rows[0].Post_code
         			};
         			console.log(rows);
         			return cb(null, user);
@@ -68,7 +69,8 @@ passport.use(new FacebookStrategy({
         				username: rows[0].Username,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
-        				type: rows[0].Type
+        				type: rows[0].Type,
+                        postcode: rows[0].Post_code
         			};
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
@@ -128,7 +130,8 @@ passport.deserializeUser(function(id, cb) {
         				username: rows[0].Username,
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
-        				type: rows[0].Type
+        				type: rows[0].Type,
+                        postcode: rows[0].Post_code
         			};
         			console.log(rows);
         			return cb(null, user);
@@ -213,8 +216,10 @@ app.post('/login',
 // Users account details
 app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
+        console.log(req.user.postcode);
         res.render("profile", { username : req.user.displayName,
-                                authenticated: req.user ? true : false })
+                                authenticated: req.user ? true : false,
+                                postcodeUpdate: req.user.postcode == "" || req.user.postcode == null })
     }
 )
 
@@ -302,7 +307,8 @@ app.get('/auth/facebook-additional-info', connect.ensureLoggedIn(),
         connection.query('SELECT * from Profiles, Users WHERE Username = "' + req.user.username + '" AND Users.Type = \'Facebook\' AND Users.User_ID = Profiles.User_ID',
             function(err, rows, fields) {
                 if (rows.length == 0  || rows[0].Post_Code == null || rows[0].Post_Code == "") {
-                    res.render("facebook-additional-info", {})
+                    res.render("facebook-additional-info", { username : req.user.displayName,
+                                                             authenticated: req.user ? true : false })
                 } else {
                     res.redirect("/auth/home");
                 }

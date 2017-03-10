@@ -1,5 +1,13 @@
 extends include/layout
 
 block content
-    h2= "Welcome " + username
-    a(href="/logout") Logout
+    .row
+        .col-md-12
+            h2= "Welcome " + username
+    if postcodeUpdate
+        .row
+            .col-md-12
+                include include/update-postcode
+    .row
+        .col-md-12
+            a(href="/logout") Logout
