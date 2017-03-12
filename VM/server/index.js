@@ -220,7 +220,8 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
 app.get("/auth/add-item", connect.ensureLoggedIn(),
     function(req, res) {
         res.render("add-item", { username : req.user.displayName,
-                                 authenticated: req.user ? true : false })
+                                 authenticated: req.user ? true : false,
+                                 postcode: req.user.postcode })
     }
 )
 

@@ -7,12 +7,11 @@ script(src="/js/validateNewItem.js")
                 input#itemName.form-control(type='text', placeholder='Item Name' name='itemName')
             .control-group
                 label(for='location') Location:
-                input#location.form-control(type='text', placeholder='Postcode' name='location')
+                input#location.form-control(type='text', value=postcode name='location')
             .control-group
                 label(for='expiry') Expiry date:
                 input#expiry.form-control(type='date' name='expiry')
             .control-group
-                // Just a placeholder for now, can make more detailed later
                 label(for='prefTimes') Preferred pick-up time:
                 select#prefTimes.form-control(name='prefTimes')
                     option(value='morning') Morning
