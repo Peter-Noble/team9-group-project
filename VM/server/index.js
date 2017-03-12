@@ -227,12 +227,11 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
 // Receives request to add new item to the listings
 app.post("/add-item", connect.ensureLoggedIn(),
     function(req, res) {
-        // need to get user id
         var postcode = req.body.location;
         UKPostcodes.getPostcode(postcode, function(error, data) {
             var locationPoint = "POINT(" + data.geo.lat + " " + data.geo.lng + ")";
             var connection = makeSQLConnection();
-                connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Expiry`, `Location`) VALUES (NULL, '3', '" + req.body.itemName + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
+                connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Expiry`, `Location`) VALUES (NULL, '" + req.user.id + "', '" + req.body.itemName + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
                     function(err, rows, fields) {
                         console.log(err);
                     }
