@@ -7,21 +7,21 @@ $(document).ready(function() {
     // check that a date entered is in the future (or today's date)
     jQuery.validator.addMethod("inFuture", function(value, element, params) {
         var input = new Date(value);
-        var today = new Date();
+        var today = params;
         if (input.getFullYear() < today.getFullYear()) {
             return false;
         } else if (input.getFullYear() > today.getFullYear()) {
             return true;
-        } else if (getMonth(input) < getMonth(new Date())) {
+        } else if (getMonth(input) < getMonth(today)) {
             return false;
-        } else if (getMonth(input) > getMonth(new Date())) {
+        } else if (getMonth(input) > getMonth(today)) {
             return true;
         } else if (input.getDate() < today.getDate()) {
             return false;
         } else {
             return true;
         }
-    },'Must be greater than {0}.');
+    },"Must be greater than today's date!");
 
     $('#add-item-form').validate({
         rules: {
@@ -35,7 +35,7 @@ $(document).ready(function() {
             },
             expiry: {
                 required: true,
-                inFuture: convertDateFormat(new Date())
+                inFuture: new Date()
             },
             prefTimes: {
                 required: true
