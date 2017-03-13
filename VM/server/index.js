@@ -194,6 +194,20 @@ app.get("/api/auth/user", connect.ensureLoggedIn(),
         res.end(json);
     })
 
+// Get items listed by the logged in account that haven't yet been collected.
+app.get("/api/auth/my-active-items", connect.ensureLoggedIn(),
+    function(req, res) {
+        res.writeHead(200, {"Content-Type": "application/json"});
+
+        var connection = makeSQLConnection();
+        connection.query('SELECT * FROM Listings WHERE User_ID = "' + req.user.id + '" AND Hidden = 0 ORDER BY Expiry ASC',
+            function(err, rows, fields) {
+                res.end(JSON.stringify(rows));
+            }
+        )
+    }
+)
+
 // Reroute for passportjs purposes
 app.get('/login',
     function(req, res){
@@ -210,9 +224,15 @@ app.post('/login',
 // Users account details
 app.get("/auth/profile", connect.ensureLoggedIn(),
     function(req, res) {
-        res.render("profile", { username : req.user.displayName,
-                                authenticated: req.user ? true : false,
-                                postcodeUpdate: req.user.postcode == "" || req.user.postcode == null })
+        var connection = makeSQLConnection();
+        connection.query('SELECT * FROM Listings WHERE User_ID = "' + req.user.id + '" AND Hidden = 0 ORDER BY Expiry ASC',
+            function(err, rows, fields) {
+                res.render("profile", { username : req.user.displayName,
+                                        authenticated: req.user ? true : false,
+                                        postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+                                        myRecentItems: rows})
+            }
+        )
     }
 )
 

@@ -1,9 +1,7 @@
 script(src="/js/validatePostcodeUpdate.js")
 p To complete your registration please enter your postcode
-.row
-    .col-md-12
-        form(method='POST' action='/update-postcode')#postcode-form
-            .control-group
-                label(for='postcode') Post code:
-                input#postcode.form-control(type='text', placeholder='AB12 3CD' name='postcode')
-            button.btn.btn-primary(type='submit') Update postcode
+form(method='POST' action='/update-postcode')#postcode-form
+    .control-group
+        label(for='postcode') Post code:
+        input#postcode.form-control(type='text', placeholder='AB12 3CD' name='postcode')
+    button.btn.btn-primary(type='submit') Update postcode

@@ -1,0 +1,14 @@
+if myRecentItems.length > 0
+    .row
+        .col-md-12
+            h3 My active items
+    .row
+        .col-md-12
+            .item-list
+                ul.list-inline
+                    each item in myRecentItems
+                        li
+                            a
+                                h3= item.Title
+                            p= prettyDate(item.Expiry)
+                            p Image goes here

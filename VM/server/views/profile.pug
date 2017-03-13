@@ -4,10 +4,16 @@ block content
     .row
         .col-md-12
             h2= "Welcome " + username
-    if postcodeUpdate
-        .row
-            .col-md-12
+    .row
+        if postcodeUpdate
+            .col-md-6
                 include include/update-postcode
+            .col-md-6
+                include include/my-active-items
+        else
+
+            .col-md-12
+                include include/my-active-items
     .row
         .col-md-12
             a(href="/logout") Logout
