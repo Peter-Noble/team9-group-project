@@ -1,16 +1,26 @@
 $(document).ready(function() {
 
-    // convert date to mm/dd/yyyy format
-    function convertDateFormat (fullDate) {
-        var twoDigitMonth = ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : '0' + (fullDate.getMonth()+1);
-        var currentDate = fullDate.getDate() + "/" + twoDigitMonth + "/" + fullDate.getFullYear();
-        return currentDate
+    function getMonth (fullDate) {
+        return ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : '0' + (fullDate.getMonth()+1);
     }
 
     // check that a date entered is in the future (or today's date)
     jQuery.validator.addMethod("inFuture", function(value, element, params) {
-        var input = convertDateFormat(new Date(value));
-        return input >= params;
+        var input = new Date(value);
+        var today = new Date();
+        if (input.getFullYear() < today.getFullYear()) {
+            return false;
+        } else if (input.getFullYear() > today.getFullYear()) {
+            return true;
+        } else if (getMonth(input) < getMonth(new Date())) {
+            return false;
+        } else if (getMonth(input) > getMonth(new Date())) {
+            return true;
+        } else if (input.getDate() < today.getDate()) {
+            return false;
+        } else {
+            return true;
+        }
     },'Must be greater than {0}.');
 
     $('#add-item-form').validate({
