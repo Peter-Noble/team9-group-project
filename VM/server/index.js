@@ -25,16 +25,10 @@ function makeSQLConnection() {
 
 passport.use(new Strategy(
     function(username, password, cb) {
-        console.log("=======");;
-        console.log("GOT HERE");
-        console.log("GOT HERE");
-        console.log("=======");
 		var connection = makeSQLConnection();
-        console.log('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"');
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
-                    console.log("Profile found");
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
