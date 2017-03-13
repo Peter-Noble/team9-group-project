@@ -8,7 +8,7 @@ if myRecentItems.length > 0
                 ul.list-inline
                     each item in myRecentItems
                         li
-                            a
+                            a(href="/item/"+item.Listing_ID)
                                 h3= item.Title
                             p= prettyDate(item.Expiry)
                             p Image goes here

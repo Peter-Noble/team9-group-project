@@ -25,10 +25,16 @@ function makeSQLConnection() {
 
 passport.use(new Strategy(
     function(username, password, cb) {
+        console.log("=======");;
+        console.log("GOT HERE");
+        console.log("GOT HERE");
+        console.log("=======");
 		var connection = makeSQLConnection();
+        console.log('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"');
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + username + '" AND Password = "' + password + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = "Local"',
             function(err, rows, fields) {
                 if (!err && rows.length > 0) {
+                    console.log("Profile found");
         			user = {
         				id: rows[0].User_ID,
         				username: rows[0].Username,
@@ -231,6 +237,29 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
                                         authenticated: req.user ? true : false,
                                         postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
                                         myRecentItems: rows})
+            }
+        )
+    }
+)
+
+// Item page
+app.get("/item/:id",
+    function(req, res) {
+        var connection = makeSQLConnection();
+        connection.query('SELECT * FROM  Listings WHERE  Listing_ID =' + req.params.id,
+            function(err, rows, fields) {
+                if (req.user) {
+                    res.render("item", { username : req.user.displayName,
+                                         authenticated: true,
+                                         postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+                                         myRecentItems: rows,
+                                         item: rows ? rows[0] : null,
+                                         ownItem: rows ? rows[0].User_ID == req.user.id : false});
+                } else {
+                    res.render("item", { authenticated: false,
+                                         item: rows ? rows[0] : null,
+                                         ownItem: false });
+                }
             }
         )
     }
