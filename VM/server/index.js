@@ -334,6 +334,18 @@ app.get("/search-results",
     }
 )
 
+// Get search results from database
+app.get("/search",
+    function(req, res) {
+    var connection = makeSQLConnection();
+        connection.query("SELECT * from Listings WHERE Title LIKE '%" + req.query.searchtext + "%';",
+            function(err, rows, fields) {
+                res.end(JSON.stringify(rows));
+            }
+        );
+    }
+)
+
 // route for facebook authentication and login
 app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 
