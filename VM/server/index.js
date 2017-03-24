@@ -309,11 +309,11 @@ app.get("/registration",
 app.post('/register',
     function(req, res) {
 		var connection = makeSQLConnection();
-        connection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + req.body.name + "', '" + req.body.postcode + "');",
+        connection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`, `Post_Code`) VALUES (NULL, '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local', '" + req.body.postcode + "')",
             function(err, rows, fields) {
-                connection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + rows.insertId + ", '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local')",
-                    function(err, rows, fields) {
-                        console.log("New user");
+                connection.query("INSERT INTO Profiles (`User_ID`, `Forename`) VALUES (" + rows.insertId + ", '" + req.body.name + "');",
+                    function(err, secondRows, fields) {
+                        console.log("New user created: " + rows.insertId);
                     }
                 );
             }
