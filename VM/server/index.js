@@ -237,25 +237,69 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
 )
 
 // Item page
-app.get("/item/:id",
-    function(req, res) {
-        var connection = makeSQLConnection();
-        connection.query('SELECT * FROM  Listings WHERE  Listing_ID =' + req.params.id,
-            function(err, rows, fields) {
-                if (req.user) {
-                    res.render("item", { username : req.user.displayName,
-                                         authenticated: true,
-                                         postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                         myRecentItems: rows,
-                                         item: rows ? rows[0] : null,
-                                         ownItem: rows ? rows[0].User_ID == req.user.id : false});
+function itemPageResponse(req, res, edit) {
+    var connection = makeSQLConnection();
+    connection.query('SELECT * FROM  Listings WHERE  Listing_ID =' + req.params.id,
+        function(err, rows, fields) {
+            if (req.user) {
+                res.render("item", { username : req.user.displayName,
+                                     authenticated: true,
+                                     postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+                                     myRecentItems: rows,
+                                     item: rows ? rows[0] : null,
+                                     ownItem: rows ? rows[0].User_ID == req.user.id : false,
+                                     edit: edit});
+            } else {
+                if (edit) {
+                    res.redirect("/item/" + req.params.id);
                 } else {
                     res.render("item", { authenticated: false,
                                          item: rows ? rows[0] : null,
                                          ownItem: false });
                 }
             }
+            connection.end();
+        }
+    )
+}
+
+app.get("/item/:id",
+    function(req, res) {
+        itemPageResponse(req, res, false);
+    }
+)
+
+app.get("/item/:id/edit",
+    function(req, res) {
+        itemPageResponse(req, res, true);
+    }
+)
+
+// Receives request to update the details of an item
+app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
+    function(req, res) {
+        var connection = makeSQLConnection();
+        var query = "UPDATE Listings SET ";
+        query += "Title = '" + req.body.Title + "', ";
+        query += "Expiry = '" + req.body.Expiry + "' ";
+        // TODO add other fields once DB has support
+        query += "WHERE Listing_ID = " + req.params.id + ";";
+        connection.query(query,
+            function(err, rows, fields) {
+                res.redirect("/item/" + req.params.id);
+                connection.end()
+            }
         )
+    }
+)
+
+// Make a request to claim an item
+app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
+    function(req, res) {
+        // TODO Make claim on item
+        console.log("claim item");
+        console.log(req.body);
+        res.redirect("/item/" + req.params.id);
     }
 )
 

@@ -2,33 +2,65 @@ extends include/layout
 
 block content
     if item
-        .row
-            .col-md-10
-                h1= item.Title
-                p= prettyDate(item.Expiry)
-            .col-md-2
-                if ownItem
-                    button(class="btn btn-info btn-lg" type="button") Edit
-                else if authenticated
-                    button(class="btn btn-info btn-lg" type="button") Claim
-                else
-
-                    button(class="btn btn-info btn-lg" type="button") Claim
-
-        .row
-            .col-md-8
-                h2 Description
-                p Description of item
-                p list of tags
-            .col-md-4
-                h3 Image goes here
-
-        if ownItem
+        form(method='POST')
             .row
-                .col-md-6
-                    h3 collection offers
-                .col-md-6
-                    h3 private messages relating to this item
+                .col-sm-10
+                    .fill
+
+                .col-sm-2
+                    if edit
+                        button(class="btn btn-info btn-lg" type="submit"  formaction="/auth/update-item/" + item.Listing_ID) Update
+                    else if ownItem
+                        a(class="btn btn-info btn-lg" type="button" href="/item/" + item.Listing_ID + "/edit") Edit
+                    else if authenticated
+                        button(class="btn btn-info btn-lg" type="submit" formaction="/auth/claim-item/" + item.Listing_ID) Claim
+                    else
+
+                        a(class="btn btn-info btn-lg" type="button" href="/login") Claim
+                br
+                br
+                br
+                .row
+                    .col-sm-12
+                        if edit
+                            .row
+                                .col-sm-2
+                                    h1 Title
+                                .col-sm-10
+                                    input.form-control(type="text", name="Title", value=item.Title)
+                            .row
+                                .col-sm-2
+                                    p Expires
+                                .col-sm-10
+                                    input.form-control(type="date", name="Expiry", value=item.Expiry.toISOString().slice(0, 10))
+                        else
+
+                            h1= item.Title
+                            p= "Expires: " + prettyDate(item.Expiry)
+
+                .row
+                    .col-md-8
+                        h2 Description
+                        if edit
+                            input.form-control(type="text", name="Description", value="Description of item")
+                            input.form-control(type="text", name="Tags", value="Tag1, tag2")
+                        else
+
+                            p Description of item
+                            p list of tags
+                    .col-md-4
+                        if edit
+                            p Edit image
+                        else
+
+                            h3 Image goes here
+
+                if ownItem
+                    .row
+                        .col-md-6
+                            h3 collection offers
+                        .col-md-6
+                            h3 private messages relating to this item
     else
 
         .row
