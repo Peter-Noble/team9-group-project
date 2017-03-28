@@ -5,6 +5,9 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var connect = require('connect-ensure-login');
 var mysql = require('mysql');
 var UKPostcodes = require('uk-postcodes-node');
+var formidable = require('formidable');
+var fs = require('fs');
+var path = require('path');
 
 var sqlDetails = require('./sqlCredentials');
 
@@ -355,11 +358,31 @@ app.post('/register',
 		var connection = makeSQLConnection();
         connection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`, `Post_Code`) VALUES (NULL, '" + req.body.username + "', '" + req.body.email + "', '" + req.body.password + "', 'Local', '" + req.body.postcode + "')",
             function(err, rows, fields) {
-                connection.query("INSERT INTO Profiles (`User_ID`, `Forename`) VALUES (" + rows.insertId + ", '" + req.body.name + "');",
-                    function(err, secondRows, fields) {
-                        console.log("New user created: " + rows.insertId);
-                    }
-                );
+                var imgPath = "";
+                var extension = "";
+                var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
+                var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
+                if (fs.existsSync(jpgPath)) {
+                    imgPath = jpgPath;
+                    extension = ".jpg";
+                } else if (fs.existsSync(pngPath)) {
+                    imgPath = pngPath;
+                    extension = ".png";
+                }
+                if (imgPath != "") {
+                    fs.rename(imgPath, path.join(path.join(__dirname, '/images/profiles'), rows.insertId + extension));
+                    connection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Photo`) VALUES (" + rows.insertId + ", '" + req.body.name + "', '" + rows.insertId + extension + "');",
+                        function(err, secondRows, fields) {
+                            connection.end();
+                        }
+                    )
+                } else {
+                    connection.query("INSERT INTO Profiles (`User_ID`, `Forename`) VALUES (" + rows.insertId + ", '" + req.body.name + "');",
+                        function(err, secondRows, fields) {
+                            connection.end();
+                        }
+                    );                    
+                }
             }
         );
         var success = true;
@@ -370,6 +393,39 @@ app.post('/register',
             res.redirect("#");
         }
     })
+
+app.post('/uploadImage', function(req, res){
+    console.log(req.sessionID);
+    // create an incoming form object
+    var form = new formidable.IncomingForm();
+
+    // specify that we don't want to allow the user to upload multiple files in a single request
+    form.multiples = false;
+
+    // store all uploads in the /uploads directory
+    form.uploadDir = path.join(__dirname, '/uploads');
+
+    // if (file.type.slice(0,5) != 'image') TODO invalid image
+
+    // rename
+    form.on('file', function(field, file) {
+        fs.rename(file.path, path.join(form.uploadDir, req.sessionID + "." + file.name.split(".")[1]));
+    });
+
+    // log any errors that occur
+    form.on('error', function(err) {
+        console.log('An error has occured: \n' + err);
+    });
+
+    // once all the files have been uploaded, send a response to the client
+    form.on('end', function() {
+        res.end('success');
+    });
+
+    // parse the incoming request containing the form data
+    form.parse(req);
+
+});
 
 // Result of user searching in the top bar
 app.get("/search-results",

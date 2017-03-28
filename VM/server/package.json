@@ -12,6 +12,7 @@
     "ejs": "^2.3.3",
     "express": "^4.14.1",
     "express-session": "^1.11.3",
+    "formidable": "^1.1.1",
     "morgan": "^1.6.1",
     "mysql": "^2.13.0",
     "passport": "^0.2.2",
