@@ -8,6 +8,15 @@ var UKPostcodes = require('uk-postcodes-node');
 var formidable = require('formidable');
 var fs = require('fs');
 var path = require('path');
+var request = require('request');
+var download = function(uri, filename, callback){
+  request.head(uri, function(err, res, body){
+    console.log('content-type:', res.headers['content-type']);
+    console.log('content-length:', res.headers['content-length']);
+
+    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+  });
+};
 
 var sqlDetails = require('./sqlCredentials');
 
@@ -58,7 +67,7 @@ passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
     callbackURL: "http://127.0.0.1:8080/auth/facebook/callback",
-    profileFields: ['id', 'displayName', 'emails']
+    profileFields: ['id', 'displayName', 'emails', 'photos']
     }, function(token, refreshToken, profile, cb) {
 		var connection = makeSQLConnection();
 		connection.query('SELECT * from Profiles, Users WHERE Username = "' + profile.id + '" AND Users.User_ID = Profiles.User_ID AND Users.Type = \'Facebook\'',
@@ -72,29 +81,36 @@ passport.use(new FacebookStrategy({
         				type: rows[0].Type,
                         postcode: rows[0].Post_code
         			};
+                    download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
+                        function(){
+                            console.log("Profile picture updated");
+                        })
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     // Create profile and user
 
             		var insertConnection = makeSQLConnection();
 
-                    insertConnection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Post_Code`) VALUES (NULL, '" + profile.displayName + "', '');",
-                        function(err, profileRows, fields) {
-                            var usersConnections = makeSQLConnection();
-                            usersConnections.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (" + profileRows.insertId + ", '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')",
-                                function(err, userRows, fields) {
+                    console.log("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')");
+                    insertConnection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')",
+                        function(err, userRows, fields) {
+                            insertConnection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Photo`) VALUES (" + userRows.insertId + ", '" + profile.displayName + "', '" + userRows.insertId + ".jpg');",
+                            function(err, profileRows, fields) {
                                     user = {
-                                        id: profileRows.insertId,
+                                        id: userRows.insertId,
                                         username: profile.id,
                                         displayName: profile.displayName,
                                         email: profile.emails[0],
                                         type: "Facebook"
                                     }
-                                    usersConnections.end();
+                                    insertConnection.end();
+                                    download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
+                                        function(){
+                                            console.log("Profile picture added");
+                                        })
                                     return cb(null, user);
                                 }
                             )
-                            insertConnection.end();
                         }
                     )
     		    } else {
