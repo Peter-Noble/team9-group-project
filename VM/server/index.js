@@ -535,7 +535,7 @@ app.get('/auth/facebook/callback',
 app.post('/update-postcode',
     function(req, res) {
 		var connection = makeSQLConnection();
-        connection.query("UPDATE Profiles SET Post_Code = '" + req.body.postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
+        connection.query("UPDATE Users SET Post_Code = '" + req.body.postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
             function(err, rows, fields) {
                 if (err) {
                     console.log(err.stack);
