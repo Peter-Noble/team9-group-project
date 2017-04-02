@@ -461,10 +461,11 @@ app.get("/search-results",
 app.get("/search",
     function(req, res) {
     var connection = makeSQLConnection();
-        connection.query("SELECT DISTINCT Listings.Listing_ID, User_ID, Title, Expiry, Location, Status from Listings, Pairings, Tags WHERE Status = 'Available' AND (Title LIKE '%" + req.query.searchtext + "%' OR (Listings.Listing_ID = Pairings.Listing_ID AND Pairings.Tag_ID = Tags.Tag_ID AND Tags.Tag_Name = '" + req.query.searchtext + "'));",
+        connection.query("SELECT DISTINCT Listings.Listing_ID, User_ID, Title, Expiry, Location, Status, Image FROM Listings, Pairings, Tags WHERE Status = 'Available' AND (Title LIKE '%" + req.query.searchtext + "%' OR (Listings.Listing_ID = Pairings.Listing_ID AND Pairings.Tag_ID = Tags.Tag_ID AND Tags.Tag_Name = '" + req.query.searchtext + "'));",
             function(err, rows, fields) {
                 res.end(JSON.stringify(rows));
-                console.log("Something");
+                console.log(err);
+                connection.end();
             }
         );
     }

@@ -11,4 +11,9 @@ if myRecentItems.length > 0
                             a(href="/item/"+item.Listing_ID)
                                 h3= item.Title
                             p= prettyDate(item.Expiry)
-                            p Image goes here
+
+                            if item.Image
+                                img(src="/images/listings/"+item.Image style="height: 65px")
+                            else
+
+                                img(style="height: 65px")

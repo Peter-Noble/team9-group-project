@@ -33,8 +33,18 @@ $(document).ready(function() {
         data: {searchtext: text},
         success: function(data) {
             $.each(JSON.parse(data), function(index, item) {
-                $('#results').append("<li><a href='/item/" + item.Listing_ID + "'><h3>" + item.Title + "</h3></a>" +
-                "<p>" + prettyDate(item.Expiry) + "</p><p>Image goes here</p>");
+                var image = "";
+                if (item.Image != "") {
+                    image = $('<img/>')
+                        .attr('src','images/listings/' + item.Image)
+                        .attr('style', 'height: 65px;');
+                } else {
+                    image = $('<img style="height: 65px;">');
+                }
+                var listElem = $('<li>');
+                $("<a href='/item/" + item.Listing_ID + "'><h3>" + item.Title + "</h3></a>" + "<p>" + prettyDate(item.Expiry) + "</p>").appendTo(listElem);
+                listElem.appendTo('#results');
+                image.appendTo(listElem);
             })
         }
     })
