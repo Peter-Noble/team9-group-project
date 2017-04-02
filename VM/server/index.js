@@ -284,7 +284,26 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
         var connection = makeSQLConnection();
         var query = "UPDATE Listings SET ";
         query += "Title = '" + req.body.Title + "', ";
-        query += "Expiry = '" + req.body.Expiry + "' ";
+        query += "Expiry = '" + req.body.Expiry + "', ";
+        console.log(req.body);
+        if (req.body.img != "") {
+            var imgPath = "";
+            var extension = "";
+            var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
+            var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
+            if (fs.existsSync(jpgPath)) {
+                imgPath = jpgPath;
+                extension = ".jpg";
+            } else if (fs.existsSync(pngPath)) {
+                imgPath = pngPath;
+                extension = ".png";
+            }
+            console.log(imgPath);
+            if (imgPath != "") {
+                fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), req.params.id + extension));
+                query += "Image = '" + req.params.id + extension + "' ";
+            }
+        }
         // TODO add other fields once DB has support
         query += "WHERE Listing_ID = " + req.params.id + ";";
         connection.query(query,
@@ -342,9 +361,10 @@ app.post("/add-item", connect.ensureLoggedIn(),
                             connection.query("UPDATE Listings SET Image = '" + rows.insertId + extension +"' WHERE  Listing_ID =" + rows.insertId),
                                 function(err, rows, fields) {
                                     console.log(err);
+                                    connection.end();
                                 }
                         } else {
-                            connection.end()
+                            connection.end();
                         }
                     }
                 );

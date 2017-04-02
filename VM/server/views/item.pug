@@ -70,13 +70,15 @@ block content
                             p list of tags
                     .col-md-4
                         if edit
-                            p Edit image
+                            p Replace image
+                            .control-group
+                                input#pictureUpload.form-control(type='file' name="img")
+                            script(src="/js/imageUpload.js")
+                        if item.Image
+                            img(src="/images/listings/"+item.Image style="height: 200px")
                         else
-                            if item.Image
-                                img(src="/images/listings/"+item.Image style="height: 200px")
-                            else
 
-                                p No image for this item
+                            p No image for this item
 
                 if ownItem
                     .row
