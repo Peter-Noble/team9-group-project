@@ -10,13 +10,33 @@ block content
                 .col-sm-2
                     if edit
                         button(class="btn btn-info btn-lg" type="submit"  formaction="/auth/update-item/" + item.Listing_ID) Update
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
                     else if ownItem
                         a(class="btn btn-info btn-lg" type="button" href="/item/" + item.Listing_ID + "/edit") Edit
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
                     else if authenticated
                         button(class="btn btn-info btn-lg" type="submit" formaction="/auth/claim-item/" + item.Listing_ID) Claim
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
                     else
 
                         a(class="btn btn-info btn-lg" type="button" href="/login") Claim
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
                 br
                 br
                 br

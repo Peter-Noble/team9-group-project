@@ -242,7 +242,7 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
 // Item page
 function itemPageResponse(req, res, edit) {
     var connection = makeSQLConnection();
-    connection.query('SELECT * FROM  Listings WHERE  Listing_ID =' + req.params.id,
+    connection.query('SELECT * FROM Listings INNER JOIN Profiles ON Listings.User_ID = Profiles.User_ID WHERE  Listing_ID =' + req.params.id,
         function(err, rows, fields) {
             if (req.user) {
                 res.render("item", { username : req.user.displayName,
@@ -381,7 +381,7 @@ app.post('/register',
                         function(err, secondRows, fields) {
                             connection.end();
                         }
-                    );                    
+                    );
                 }
             }
         );
@@ -499,6 +499,6 @@ app.get('/logout',
 app.use('/styles', express.static("styles"));
 app.use('/js', express.static("js"));
 // Serve any files in the public directory.
-app.use(express.static("public"));
+app.use('/images', express.static("images"));
 
 app.listen(8080);
