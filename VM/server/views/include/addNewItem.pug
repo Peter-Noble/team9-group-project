@@ -1,6 +1,6 @@
 script(src="/js/validateNewItem.js")
 .row
-    .col-md-6
+    .col-md-12
         form(method='POST' action='/add-item')#add-item-form
             .control-group
                 label(for='itemName') Item name:
@@ -20,6 +20,9 @@ script(src="/js/validateNewItem.js")
             .control-group
                 label(for='description') Description:
                 input#description.form-control(type='text', placeholder='Description' name='description')
+            .control-group
+                label(for='img') Image:
+                input#pictureUpload.form-control(type='file' name="img")
             button.btn.btn-primary(type='submit') List item
-    .col-md-6
-        p Picture upload here?
+
+script(src="/js/imageUpload.js")

@@ -319,12 +319,33 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
 app.post("/add-item", connect.ensureLoggedIn(),
     function(req, res) {
         var postcode = req.body.location;
+        var imgPath = "";
+        var extension = "";
+        if (req.body.img != "") {
+            var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
+            var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
+            if (fs.existsSync(jpgPath)) {
+                imgPath = jpgPath;
+                extension = ".jpg";
+            } else if (fs.existsSync(pngPath)) {
+                imgPath = pngPath;
+                extension = ".png";
+            }
+        }
         UKPostcodes.getPostcode(postcode, function(error, data) {
             var locationPoint = "POINT(" + data.geo.lat + " " + data.geo.lng + ")";
             var connection = makeSQLConnection();
                 connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Expiry`, `Location`) VALUES (NULL, '" + req.user.id + "', '" + req.body.itemName + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
                     function(err, rows, fields) {
-                        console.log(err);
+                        if (imgPath != "") {
+                            fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), rows.insertId + extension));
+                            connection.query("UPDATE Listings SET Image = '" + rows.insertId + extension +"' WHERE  Listing_ID =" + rows.insertId),
+                                function(err, rows, fields) {
+                                    console.log(err);
+                                }
+                        } else {
+                            connection.end()
+                        }
                     }
                 );
                 var success = true;
@@ -360,14 +381,16 @@ app.post('/register',
             function(err, rows, fields) {
                 var imgPath = "";
                 var extension = "";
-                var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
-                var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
-                if (fs.existsSync(jpgPath)) {
-                    imgPath = jpgPath;
-                    extension = ".jpg";
-                } else if (fs.existsSync(pngPath)) {
-                    imgPath = pngPath;
-                    extension = ".png";
+                if (req.body.img != "") {
+                    var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
+                    var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
+                    if (fs.existsSync(jpgPath)) {
+                        imgPath = jpgPath;
+                        extension = ".jpg";
+                    } else if (fs.existsSync(pngPath)) {
+                        imgPath = pngPath;
+                        extension = ".png";
+                    }
                 }
                 if (imgPath != "") {
                     fs.rename(imgPath, path.join(path.join(__dirname, '/images/profiles'), rows.insertId + extension));

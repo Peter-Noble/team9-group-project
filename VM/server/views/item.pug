@@ -72,8 +72,11 @@ block content
                         if edit
                             p Edit image
                         else
+                            if item.Image
+                                img(src="/images/listings/"+item.Image style="height: 200px")
+                            else
 
-                            h3 Image goes here
+                                p No image for this item
 
                 if ownItem
                     .row
