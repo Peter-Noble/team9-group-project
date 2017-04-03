@@ -5,6 +5,30 @@ block content
         .col-md-12
             h2= "Welcome " + username
     .row
+        h3 Details
+        script(src="/js/validateProfileUpdate.js")
+        form(method='POST' action='/auth/update-profile')#update-profile
+            .col-md-8
+                .control-group
+                    label(for='Name') Name:
+                    input.form-control(type="text", name="Name", value=user.displayName)
+                .control-group
+                    label Email:
+                    input.form-control(type="text", name="Email", value=user.email)
+                .control-group
+                    label Post code:
+                    input.form-control(type="text", name="Postcode", value=user.postcode)
+            .col-md-4
+                if user.photo
+                    img(src="/images/profiles/"+user.photo style="max-height:150px")
+                br
+                .control-group
+                    label(for='img') Image:
+                    input#pictureUpload.form-control(type='file' name="img")
+                script(src="/js/imageUpload.js")
+                br
+                button.btn.btn-primary(type='submit') Update profile
+    .row
         if postcodeUpdate
             .col-md-6
                 include include/update-postcode
