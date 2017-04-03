@@ -335,6 +335,10 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
 app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
     function(req, res) {
         // TODO Make claim on item
+        var connection = makeSQLConnection();
+        var query = "UPDATE Listings SET Status = 'Reserved' WHERE Listing_ID = " + req.params.id + ";";
+        connection.query(query);
+        connection.end();
         console.log("claim item");
         console.log(req.body);
         res.redirect("/item/" + req.params.id);
