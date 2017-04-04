@@ -62,11 +62,11 @@ block content
                     .col-md-8
                         h2 Description
                         if edit
-                            input.form-control(type="text", name="Description", value="Description of item")
+                            input.form-control(type="text", name="Description", value=item.Description)
                             input.form-control(type="text", name="Tags", value="Tag1, tag2")
                         else
 
-                            p Description of item
+                            p= item.Description
                             p list of tags
                     .col-md-4
                         if edit

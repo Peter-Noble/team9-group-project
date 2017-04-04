@@ -374,13 +374,13 @@ app.post("/add-item", connect.ensureLoggedIn(),
         UKPostcodes.getPostcode(postcode, function(error, data) {
             var locationPoint = "POINT(" + data.geo.lat + " " + data.geo.lng + ")";
             var connection = makeSQLConnection();
-                connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Expiry`, `Location`) VALUES (NULL, '" + req.user.id + "', '" + req.body.itemName + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
+                connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Description`, `Expiry`, `Location`) VALUES (NULL, '" + req.user.id + "', '" + req.body.itemName + "', '" + req.body.description + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
                     function(err, rows, fields) {
                         if (imgPath != "") {
                             fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), rows.insertId + extension));
                             connection.query("UPDATE Listings SET Image = '" + rows.insertId + extension +"' WHERE  Listing_ID =" + rows.insertId),
                                 function(err, rows, fields) {
-                                    console.log(err);
+                                    console.log("There was a problem: " + err);
                                     connection.end();
                                 }
                         } else {
