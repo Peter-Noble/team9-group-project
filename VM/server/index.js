@@ -145,7 +145,8 @@ passport.deserializeUser(function(id, cb) {
         				displayName: rows[0].Forename,
         				email: rows[0].Email,
         				type: rows[0].Type,
-                        postcode: rows[0].Post_Code
+                        postcode: rows[0].Post_Code,
+                        photo: rows[0].Photo
         			};
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
@@ -249,7 +250,8 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
                 res.render("profile", { username : req.user.displayName,
                                         authenticated: req.user ? true : false,
                                         postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                        myRecentItems: rows})
+                                        myRecentItems: rows,
+                                        user: req.user})
             }
         )
     }
@@ -456,6 +458,43 @@ app.post('/register',
             res.redirect("#");
         }
     })
+
+app.post('/auth/update-profile',  connect.ensureLoggedIn(),
+    function(req, res){
+        console.log("Update profile");
+        var connection = makeSQLConnection();
+        connection.query("UPDATE Users SET Post_Code = '" + req.body.Postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
+            function(err, rows, fields) {
+                console.log(err);
+                var photoQuery = "";
+                if (req.body.img != "") {
+                    var imgPath = "";
+                    var extension = "";
+                    var jpgPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".jpg");
+                    var pngPath = path.join(path.join(__dirname, '/uploads'), req.sessionID + ".png");
+                    if (fs.existsSync(jpgPath)) {
+                        imgPath = jpgPath;
+                        extension = ".jpg";
+                    } else if (fs.existsSync(pngPath)) {
+                        imgPath = pngPath;
+                        extension = ".png";
+                    }
+                    if (imgPath != "") {
+                        fs.rename(imgPath, path.join(path.join(__dirname, '/images/profiles'), req.user.id + extension));
+                        photoQuery += ", Photo = '" + req.user.id + extension + "' ";
+                    }
+                }
+                connection.query("UPDATE Profiles SET Forename = '" + req.body.Name + "'" + photoQuery + " WHERE User_ID = " + req.user.id + ";",
+                    function(err, rows, fields) {
+                        console.log(err);
+                        connection.end();
+                        res.redirect("/auth/profile");
+                    }
+                )
+            }
+        );
+    }
+)
 
 app.post('/uploadImage', function(req, res){
     console.log(req.sessionID);
