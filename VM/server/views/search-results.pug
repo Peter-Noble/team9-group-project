@@ -20,6 +20,16 @@ block content
             include include/map
     .row
         .col-md-4
+            .control-group
+                label(for="postcode") Postcode:
+                if user
+                    input#postcode.form-control(name="postcode", type='text', value=user.postcode)
+                else
+
+                    input#postcode.form-control(name="postcode", type='text', placeholder="postcode")
+            .control-group
+                label(for="radius") Radius km:
+                input#searchRadius.form-control(name="radius", type='number', value=5)
             p Refine search goes here
         .col-md-8
             .item-list

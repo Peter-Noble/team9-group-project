@@ -532,7 +532,8 @@ app.post('/uploadImage', function(req, res){
 // Result of user searching in the top bar
 app.get("/search-results",
     function(req, res) {
-        res.render("search-results", { authenticated: req.user ? true : false })
+        res.render("search-results", { authenticated: req.user ? true : false,
+                                       user: req.user ? req.user : null })
     }
 )
 
@@ -547,6 +548,26 @@ app.get("/search",
                 connection.end();
             }
         );
+    }
+)
+
+// Get lat long for postcode. Used for placing search radius on map from postcode
+app.get("/lat-long-from-postcode",
+    function(req, res) {
+        UKPostcodes.getPostcode(req.query.postcode,
+            function(err, data) {
+                if (err) {
+                    console.log(err);
+                }
+                res.writeHead(200, {"Content-Type": "application/json"});
+                if (data) {
+                    var json = JSON.stringify({"lat": data.geo.lat, "lng": data.geo.lng});
+                    res.end(json);
+                } else {
+                    res.end();
+                }
+            }
+        )
     }
 )
 

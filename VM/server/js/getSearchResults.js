@@ -1,3 +1,5 @@
+var searchRadiusPostcodeTimeout;
+
 $(document).ready(function() {
 
     // had to copy this in from formatDateScript.pug as I wasn't sure how else to make prettyDate available
@@ -57,5 +59,27 @@ $(document).ready(function() {
             );
             updateMapSearchResults(mapItems);
         }
+    })
+    $("#postcode").on("input", function(e) {
+        clearTimeout(searchRadiusPostcodeTimeout);
+        searchRadiusPostcodeTimeout = setTimeout(function() {
+            if ($("#postcode")[0].value != "") {
+                $.ajax({
+                    url: "/lat-long-from-postcode",
+                    data: {postcode: $("#postcode")[0].value},
+                    success: function(data) {
+                        updateSearchArea({centre: data,
+                                          radius: parseInt($("#searchRadius")[0].value) * 1000,
+                                          visible: true});
+                    },
+                    error: function(data) {
+                        searchRadiusCircle.setVisible(false);
+                    }
+                })
+            }
+        }, 1000)
+    })
+    $("#searchRadius").on("change", function(e) {
+        searchRadiusCircle.setRadius(parseInt($("#searchRadius")[0].value) * 1000);
     })
 })
