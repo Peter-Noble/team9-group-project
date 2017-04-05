@@ -32,7 +32,8 @@ $(document).ready(function() {
         url: "/search",
         data: {searchtext: text},
         success: function(data) {
-            $.each(JSON.parse(data), function(index, item) {
+            var parsedData = JSON.parse(data);
+            $.each(parsedData, function(index, item) {
                 var image = "";
                 if (item.Image != "") {
                     image = $('<img/>')
@@ -46,6 +47,15 @@ $(document).ready(function() {
                 listElem.appendTo('#results');
                 image.appendTo(listElem);
             })
+            mapItems = parsedData.map(
+                function(item, i) {
+                    return {
+                        position: {lat: item.Location.x, lng: item.Location.y},
+                        label: (i+1).toString()
+                    };
+                }
+            );
+            updateMapSearchResults(mapItems);
         }
     })
 })
