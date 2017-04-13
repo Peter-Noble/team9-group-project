@@ -20,7 +20,14 @@ block content
             include include/map
     .row
         .col-md-4
-            p Refine search goes here
+            h2 Refine search
+            label Sort by
+            select #sortBy
+                option Distance (closest - furthest)
+                option Date added (newest - oldest)
+                option Date added (oldest - newest)
+                option Expiry date (furthest - closest)
+                option Expiry date (closest - furthest)
         .col-md-8
             .item-list
                 ul.list-inline#results
