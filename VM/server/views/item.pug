@@ -8,7 +8,21 @@ block content
                     .fill
 
                 .col-sm-2
-                    if edit
+                    if item.Status == "Reserved"
+                        a(class="btn btn-warning btn-lg") Reserved
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
+                    else if item.Status != "Available"
+                        a(class="btn btn-danger btn-lg") Not available
+                            if item.Photo
+                                img(src="/images/profiles/"+item.Photo style="height: 46px")
+                            else
+
+                                img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
+                    else if edit
                         button(class="btn btn-info btn-lg" type="submit"  formaction="/auth/update-item/" + item.Listing_ID) Update
                             if item.Photo
                                 img(src="/images/profiles/"+item.Photo style="height: 46px")
@@ -82,10 +96,17 @@ block content
 
                 if ownItem
                     .row
-                        .col-md-6
-                            h3 collection offers
-                        .col-md-6
-                            h3 private messages relating to this item
+                        h3 collection offers
+                    .row
+                        if item.Status == "Available"
+                            p No offers yet!
+                        else if item.Status == "Reserved"
+                            p= "This item has been claimed by user with id " + item.Collector_ID
+                        else if item.Status == "Collected"
+                            p= "This item has been collected by the user with id " + item.Collector_ID
+                        else if item.Status == "Expired"
+                            p= "This item has expired and so can no longer be claimed"
+
     else
 
         .row

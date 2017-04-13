@@ -338,12 +338,22 @@ app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
     function(req, res) {
         // TODO Make claim on item
         var connection = makeSQLConnection();
-        var query = "UPDATE Listings SET Status = 'Reserved' WHERE Listing_ID = " + req.params.id + ";";
-        connection.query(query);
-        connection.end();
-        console.log("claim item");
-        console.log(req.body);
-        res.redirect("/item/" + req.params.id);
+        var available = "SELECT * FROM Listings WHERE Listing_ID = '" + req.params.id + "';";
+        connection.query(available,
+            function(err, rows, fields) {
+                if (rows[0].Status == "Available" && rows[0].User_ID != req.user.id) {
+                    var query = "UPDATE Listings SET Status = 'Reserved', Collector_ID = '" + req.user.id + "' WHERE Listing_ID = " + req.params.id + ";";
+                    connection.query(query, function(err, rows, fields){
+                        connection.end();
+                        console.log(err);
+                        // TODO new item claimed. Send notification.
+                    });
+                } else {
+                    connection.end();
+                }
+                res.redirect("/item/" + req.params.id);
+            }
+        )
     }
 )
 
