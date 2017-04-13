@@ -20,6 +20,7 @@ block content
             include include/map
     .row
         .col-md-4
+<<<<<<< HEAD
             h2 Refine search
             label Sort by
             select #sortBy
@@ -28,6 +29,19 @@ block content
                 option Date added (oldest - newest)
                 option Expiry date (furthest - closest)
                 option Expiry date (closest - furthest)
+=======
+            .control-group
+                label(for="postcode") Postcode:
+                if user
+                    input#postcode.form-control(name="postcode", type='text', value=user.postcode)
+                else
+
+                    input#postcode.form-control(name="postcode", type='text', placeholder="postcode")
+            .control-group
+                label(for="radius") Radius km:
+                input#searchRadius.form-control(name="radius", type='number', value=5)
+            p Refine search goes here
+>>>>>>> 3bdb422003ca127b6d15efd144bef6a1ba75380e
         .col-md-8
             .item-list
                 ul.list-inline#results
