@@ -80,7 +80,11 @@ block content
                             input.form-control(type="text", name="Tags", value="Tag1, tag2")
                         else
 
-                            p= item.Description
+                            if item.Description
+                                p= item.Description
+                            else
+
+                                p No description.
                             p list of tags
                     .col-md-4
                         if edit
@@ -94,7 +98,7 @@ block content
 
                             p No image for this item
 
-                if ownItem
+                if ownItem && !edit
                     .row
                         h3 collection offers
                     .row

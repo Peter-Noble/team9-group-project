@@ -322,7 +322,8 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
                 query += "Image = '" + req.params.id + extension + "' ";
             }
         }
-        // TODO add other fields once DB has support
+        query += "Description = '" + req.body.Description+ "'";
+        // TODO add tags once autocomplete is in
         query += "WHERE Listing_ID = " + req.params.id + ";";
         connection.query(query,
             function(err, rows, fields) {
