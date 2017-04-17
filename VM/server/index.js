@@ -316,11 +316,17 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
         var connection = makeSQLConnection();
         connection.query("SELECT * FROM Listings WHERE User_ID = " + req.user.id + " AND Status NOT IN ('Collected','Removed') ORDER BY Expiry ASC",
             function(err, rows, fields) {
-                res.render("profile", { username : req.user.displayName,
-                                        authenticated: req.user ? true : false,
-                                        postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                        myRecentItems: rows,
-                                        user: req.user})
+                connection.query("SELECT * FROM Listings WHERE Status = 'Reserved' AND Collector_ID = '" + req.user.id + "'",
+                    function(err, pending, fields) {
+                        res.render("profile", { username : req.user.displayName,
+                                                authenticated: req.user ? true : false,
+                                                postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+                                                myRecentItems: rows,
+                                                myPendingItems: pending,
+                                                user: req.user});
+                        connection.end();
+                    }
+                )
             }
         )
     }
@@ -663,7 +669,7 @@ app.get('/auth/facebook-additional-info', connect.ensureLoggedIn(),
                     res.render("facebook-additional-info", { username : req.user.displayName,
                                                              authenticated: req.user ? true : false })
                 } else {
-                    res.redirect("/auth/home");
+                    res.redirect("/auth/profile");
                 }
             }
         )
