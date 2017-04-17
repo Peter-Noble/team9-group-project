@@ -98,18 +98,24 @@ block content
 
                             p No image for this item
 
-                if ownItem && !edit
-                    .row
-                        h3 collection offers
-                    .row
-                        if item.Status == "Available"
-                            p No offers yet!
-                        else if item.Status == "Reserved"
-                            p= "This item has been claimed by user with id " + item.Collector_ID
-                        else if item.Status == "Collected"
-                            p= "This item has been collected by the user with id " + item.Collector_ID
-                        else if item.Status == "Expired"
-                            p= "This item has expired and so can no longer be claimed"
+        if !edit && user && authenticated
+            if item.Status == "Reserved"
+                p= "This item has been claimed by user with id " + item.Collector_ID
+                if item.User_ID == user.id || item.Collector_ID == user.id
+                    ul#messages(style="height: 20%; width: 40%; border: 1px solid black; overflow: hidden; overflow-y: scroll")
+                    form(action="")#messageInput
+                        input(id="m" autocomplete="off")
+                        button Send
+                    script(src="/socket.io/socket.io.js")
+                    script(src="/js/privateMessaging.js")
+            if ownItem
+                .row
+                    if item.Status == "Available"
+                        p No offers yet!
+                    else if item.Status == "Collected"
+                        p= "This item has been collected by the user with id " + item.Collector_ID
+                    else if item.Status == "Expired"
+                        p This item has expired and so can no longer be claimed
 
     else
 

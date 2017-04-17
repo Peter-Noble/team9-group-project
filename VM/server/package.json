@@ -18,7 +18,9 @@
     "passport": "^0.2.2",
     "passport-facebook": "^2.1.1",
     "passport-local": "^1.0.0",
+    "passport.socketio": "^3.7.0",
     "pug": "^2.0.0-beta11",
+    "socket.io": "^1.7.3",
     "uk-postcodes-node": "^0.2.3"
   },
   "scripts": {
