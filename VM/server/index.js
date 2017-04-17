@@ -393,7 +393,7 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
             console.log(imgPath);
             if (imgPath != "") {
                 fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), req.params.id + extension));
-                query += "Image = '" + req.params.id + extension + "' ";
+                query += "Image = '" + req.params.id + extension + "', ";
             }
         }
         query += "Description = '" + req.body.Description+ "'";
@@ -401,6 +401,7 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
         query += "WHERE Listing_ID = " + req.params.id + ";";
         connection.query(query,
             function(err, rows, fields) {
+                console.log(err);
                 res.redirect("/item/" + req.params.id);
                 connection.end()
             }
