@@ -188,26 +188,48 @@ io.use(passportSocketIo.authorize({
 }));
 
 io.on("connection", function(socket) {
-    socket.on("new", function(data) {
+    var userID = null;
+    var itemID = null;
 
+    socket.on("new", function(data) {
+        userID = socket.request.user.id;
+        itemID = data.itemID;
         if (!(data.itemID in socketStore)) {
             socketStore[data.itemID] = {};
         }
         if (!(socket.request.user.id in socketStore[data.itemID])) {
-            socketStore[data.itemID][socket.request.user.id] = [];
+            socketStore[itemID][userID] = [];
         }
-        socketStore[data.itemID][socket.request.user.id].push(socket);
+        socketStore[itemID][userID].push(socket);
+
+        var connection = makeSQLConnection();
+        connection.query("SELECT * FROM Messages WHERE ItemID = " + itemID + " ORDER BY Timestamp ASC",
+            function(err, rows, fields) {
+                socket.emit("message history", rows);
+                connection.end();
+            }
+        )
     })
     socket.on("message", function(data) {
-        for (var key in socketStore[data.itemID]) {
-            for (var foreignSocket in socketStore[data.itemID][key]) {
-                var returnData = {message: data.message, sender: socket.request.user.id};
-                socketStore[data.itemID][key][foreignSocket].emit("new message", returnData);
+        for (var key in socketStore[itemID]) {
+            for (var foreignSocket in socketStore[itemID][key]) {
+                var returnData = {Message: data.message, SenderID: userID};
+                socketStore[itemID][key][foreignSocket].emit("new message", returnData);
             }
         }
+        var connection = makeSQLConnection();
+        connection.query("INSERT INTO Messages (`ItemID`, `SenderID`, `Message`) VALUES ('" + itemID + "', '" + userID + "', '" + data.message + "')",
+            function(err, rows, fields) {
+                connection.end();
+            }
+        );
     })
     socket.on("disconnect", function() {
-        console.log("Disconnected");
+        var sockets = socketStore[itemID][userID]
+        var index = sockets.indexOf(socket);
+        if (index > -1) {
+            sockets.splice(index, 1);
+        }
     })
 })
 

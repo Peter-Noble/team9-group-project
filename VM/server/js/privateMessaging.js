@@ -5,17 +5,29 @@ $.get("/api/auth/user", function(data) {
     userID = data.id;
     socket.emit("new", {itemID: itemID});
 })
-socket.on("new message", function(data) {
-    if (data.sender == userID) {
-        $("<li>").append("Me: " + data.message).appendTo("#messages");
+
+function addMessage(data) {
+    if (data.SenderID == userID) {
+        $("<li>").append("Me: " + data.Message).appendTo("#messages");
     } else {
-        $("<li>").append(data.message).appendTo("#messages");
+        $("<li>").append(data.Message).appendTo("#messages");
+    }
+}
+
+socket.on("new message", function(data) {
+    addMessage(data);
+})
+
+socket.on("message history", function(data) {
+    for (var i in data) {
+        addMessage(data[i]);
     }
 })
+
 $("#messageInput").submit(function() {
     var message = $("#messageInput input")[0].value;
     if (message.trim() != "") {
-        socket.emit("message", {message: message, itemID: itemID});
+        socket.emit("message", {message: message});
     }
     $("#messageInput input")[0].value = "";
     return false;
