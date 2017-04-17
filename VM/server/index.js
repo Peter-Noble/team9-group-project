@@ -165,12 +165,58 @@ passport.deserializeUser(function(id, cb) {
 // Create a new Express application.
 var app = express();
 
+// Set up for messaging sockets
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var passportSocketIo = require('passport.socketio');
+var cookieParser = require('cookie-parser');
+var port = process.env.PORT || 8080;
+var expressSession = require('express-session');
+server.listen(port);
+
+var MemoryStore = expressSession.MemoryStore
+var sessionStore = new MemoryStore();
+
+var socketStore = {}  // {ItemID: {User_ID: [sockets]}}
+
+io.use(passportSocketIo.authorize({
+    key: 'connect.sid',
+    secret: "team 9 secret",
+    store: sessionStore,
+    passport: passport,
+    cookieParser: cookieParser
+}));
+
+io.on("connection", function(socket) {
+    socket.on("new", function(data) {
+
+        if (!(data.itemID in socketStore)) {
+            socketStore[data.itemID] = {};
+        }
+        if (!(socket.request.user.id in socketStore[data.itemID])) {
+            socketStore[data.itemID][socket.request.user.id] = [];
+        }
+        socketStore[data.itemID][socket.request.user.id].push(socket);
+    })
+    socket.on("message", function(data) {
+        for (var key in socketStore[data.itemID]) {
+            for (var foreignSocket in socketStore[data.itemID][key]) {
+                var returnData = {message: data.message, sender: socket.request.user.id};
+                socketStore[data.itemID][key][foreignSocket].emit("new message", returnData);
+            }
+        }
+    })
+    socket.on("disconnect", function() {
+        console.log("Disconnected");
+    })
+})
+
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
-app.use(require('morgan')('combined'));
-app.use(require('cookie-parser')());
+//app.use(require('morgan')('combined'));  // Connection debugging
+app.use(cookieParser());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'team 9 secret', resave: false, saveUninitialized: false }));
+app.use(expressSession({ store: sessionStore, secret : "team 9 secret", resave: false, saveUninitialized: false }));
 
 // Initialize Passport and restore authentication state, if any, from the
 // session.
@@ -210,7 +256,8 @@ app.get("/api/auth/user", connect.ensureLoggedIn(),
         var json = JSON.stringify({username: req.user.username,
                                    displayName: req.user.displayName,
                                    email: req.user.email,
-                                   type: req.user.type});
+                                   type: req.user.type,
+                                   id: req.user.id});
         res.end(json);
     })
 
@@ -263,7 +310,7 @@ function itemPageResponse(req, res, edit) {
     connection.query('SELECT * FROM Listings INNER JOIN Profiles ON Listings.User_ID = Profiles.User_ID WHERE  Listing_ID =' + req.params.id,
         function(err, rows, fields) {
             if (req.user) {
-                res.render("item", { username : req.user.displayName,
+                res.render("item", { user: req.user,
                                      authenticated: true,
                                      postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
                                      myRecentItems: rows,
@@ -636,4 +683,4 @@ app.use('/js', express.static("js"));
 // Serve any files in the public directory.
 app.use('/images', express.static("images"));
 
-app.listen(8080);
+//app.listen(8080);
