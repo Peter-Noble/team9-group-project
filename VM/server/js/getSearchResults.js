@@ -30,20 +30,43 @@ $(document).ready(function() {
         }
     };
     var text = getUrlParameter('searchtext');
+    var sortParam = getUrlParameter('sortBy');
+    console.log(sortParam);
     $.ajax({
         url: "/search",
-        data: {searchtext: text},
+        data: {searchtext: text, sort: sortParam},
         success: function(data) {
             var parsedData = JSON.parse(data);
-            // Sorting function goes here
-            var sorted = [];
-            for (obj in parsedData){
-                console.log(parsedData[obj]);
-            }
-//            console.log(parsedData);
             
+            // Sorting function (date added)
+            var sorted = []
+            console.log(Object.keys(parsedData).length);
+            for (obj in parsedData){
+                sorted.push(parsedData[obj]);
+            }
+            
+            switch(sortParam) {
+                case "dateASC":
+                    console.log("dateASC used to sort");
+                    sorted.sort(function(a, b){
+                        return new Date(a.Added).getTime() - new Date(b.Added).getTime()});
+                    break;
+                case "dateDSC":
+                    console.log("dateDSC used to sort");
+                    sorted.sort(function(a, b){
+                        return new Date(b.Added).getTime() - new Date(a.Added).getTime()});
+                    break;
+                default:
+                    console.log("default used to sort");
+                    sorted.sort(function(a, b){
+                        return new Date(a.Added).getTime() - new Date(b.Added).getTime()});
+                    break;
+            }
+            
+            console.log(sorted);
             // End sorting function
-            $.each(parsedData, function(index, item) {
+            
+            $.each(sorted, function(index, item) {
                 var image = "";
                 if (item.Image != "") {
                     image = $('<img/>')
