@@ -4,7 +4,6 @@ var Strategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var connect = require('connect-ensure-login');
 var mysql = require('mysql');
-var UKPostcodes = require('uk-postcodes-node');
 var formidable = require('formidable');
 var fs = require('fs');
 var path = require('path');
@@ -459,8 +458,9 @@ app.post("/add-item", connect.ensureLoggedIn(),
                 extension = ".png";
             }
         }
-        UKPostcodes.getPostcode(postcode, function(error, data) {
-            var locationPoint = "POINT(" + data.geo.lat + " " + data.geo.lng + ")";
+        request("http://api.postcodes.io/postcodes/" + postcode, function(err, response, body) {
+            data = JSON.parse(body);
+            var locationPoint = "POINT(" + data.result.latitude + " " + data.result.longitude + ")";
             var connection = makeSQLConnection();
                 connection.query("INSERT INTO Listings (`Listing_ID`, `User_ID`, `Title`, `Description`, `Expiry`, `Location`) VALUES (NULL, '" + req.user.id + "', '" + req.body.itemName + "', '" + req.body.description + "', '" + req.body.expiry + "', GeomFromText('" + locationPoint + "'));",
                     function(err, rows, fields) {
@@ -640,14 +640,15 @@ app.get("/search",
 // Get lat long for postcode. Used for placing search radius on map from postcode
 app.get("/lat-long-from-postcode",
     function(req, res) {
-        UKPostcodes.getPostcode(req.query.postcode,
-            function(err, data) {
+        request("http://api.postcodes.io/postcodes/" + req.query.postcode,
+            function(err, response, body) {
+                data = JSON.parse(body);
                 if (err) {
                     console.log(err);
                 }
                 res.writeHead(200, {"Content-Type": "application/json"});
                 if (data) {
-                    var json = JSON.stringify({"lat": data.geo.lat, "lng": data.geo.lng});
+                    var json = JSON.stringify({"lat": data.result.latitude, "lng": data.result.longitude});
                     res.end(json);
                 } else {
                     res.end();
