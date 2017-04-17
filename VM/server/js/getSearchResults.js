@@ -35,6 +35,14 @@ $(document).ready(function() {
         data: {searchtext: text},
         success: function(data) {
             var parsedData = JSON.parse(data);
+            // Sorting function goes here
+            var sorted = [];
+            for (obj in parsedData){
+                console.log(parsedData[obj]);
+            }
+//            console.log(parsedData);
+            
+            // End sorting function
             $.each(parsedData, function(index, item) {
                 var image = "";
                 if (item.Image != "") {
