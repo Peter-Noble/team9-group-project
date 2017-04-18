@@ -10,6 +10,10 @@ var input = $("#tagInput").get(0);
 var optionsVal = $("#tagsList").get(0);
 
 var addedTags = [];
+var existingTags = $(".selectedTags").children()
+for (var i = 0; i < existingTags.length; i++) {
+    addedTags.push(existingTags[i].text);
+}
 
 $("#tagsList").click(function () {
     addTag(this.value);
@@ -68,15 +72,7 @@ function addTag(val) {
         $(".selectedTags").append($("<a>")
                                     .text(val)
                                     .addClass("label label-success")
-                                    .mouseup(function() {
-                                        var text = $(this).text();
-                                        var index = addedTags.indexOf(text);
-                                        if (index > -1) {
-                                            addedTags.splice(index, 1);
-                                            $(".selectedTags").find("a").slice(index, index+1).remove();
-                                            $("#selectedTagsSubmit").get(0).value = addedTags.join();
-                                        }
-                                    }))
+                                    .mouseup(removeTag))
         addedTags.push(val);
         $("#selectedTagsSubmit").get(0).value = addedTags.join();
     }
@@ -84,4 +80,19 @@ function addTag(val) {
 
 function updateselectedTagsSubmit() {
     $("#selectedTagsSubmit").value;
+}
+
+function removeTag(tagName) {
+    var text = "";
+    if (typeof tagName == "string") {
+        text = tagName;
+    } else {
+        text = $(this).text();
+    }
+    var index = addedTags.indexOf(text);
+    if (index > -1) {
+        addedTags.splice(index, 1);
+        $(".selectedTags").find("a").slice(index, index+1).remove();
+        $("#selectedTagsSubmit").get(0).value = addedTags.join();
+    }
 }

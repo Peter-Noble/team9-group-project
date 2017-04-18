@@ -28,6 +28,15 @@ script(src="/js/validateNewItem.js")
                 label(for='description') Description:
                 input#description.form-control(type='text', placeholder='Description' name='description')
             .control-group
+                label(for='tags') Tags:
+                .selectedTags
+                input#selectedTagsSubmit(name="SelectedTags" type="text" hidden)
+                br
+                input.form-control#tagInput(type="text", name="Tags", autocomplete="on", placeholder="Search tags")
+                .dropdown(style="display: none")
+                    select#tagsList(name="list")
+                script(src="/js/tagAutocomplete.js")
+            .control-group
                 label(for='img') Image:
                 input#pictureUpload.form-control(type='file' name="img")
             button.btn.btn-primary(type='submit') List item

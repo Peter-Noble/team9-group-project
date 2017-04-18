@@ -296,6 +296,19 @@ app.get("/api/auth/my-active-items", connect.ensureLoggedIn(),
     }
 )
 
+// Get list of all tags
+app.get("/api/all-tags",
+    function(req, res) {
+        var connection = makeSQLConnection();
+        connection.query("SELECT * FROM Tags",
+            function(err, rows, fields) {
+                connection.end();
+                res.writeHead(200, {"Content-Type": "application/json"});
+                res.end(JSON.stringify(rows));
+            })
+    }
+)
+
 // Reroute for passportjs purposes
 app.get('/login',
     function(req, res){
@@ -336,24 +349,30 @@ function itemPageResponse(req, res, edit) {
     var connection = makeSQLConnection();
     connection.query('SELECT * FROM Listings INNER JOIN Profiles ON Listings.User_ID = Profiles.User_ID WHERE  Listing_ID =' + req.params.id,
         function(err, rows, fields) {
-            if (req.user) {
-                res.render("item", { user: req.user,
-                                     authenticated: true,
-                                     postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                     myRecentItems: rows,
-                                     item: rows ? rows[0] : null,
-                                     ownItem: rows ? rows[0].User_ID == req.user.id : false,
-                                     edit: edit});
-            } else {
-                if (edit) {
-                    res.redirect("/item/" + req.params.id);
-                } else {
-                    res.render("item", { authenticated: false,
-                                         item: rows ? rows[0] : null,
-                                         ownItem: false });
+            connection.query("SELECT * FROM Pairings, Tags WHERE Pairings.Listing_ID = " + req.params.id + " AND Pairings.Tag_ID = Tags.Tag_ID",
+                function(err, tags, fields) {
+                    if (req.user) {
+                        res.render("item", { user: req.user,
+                                             authenticated: true,
+                                             postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+                                             myRecentItems: rows,
+                                             item: rows ? rows[0] : null,
+                                             ownItem: rows ? rows[0].User_ID == req.user.id : false,
+                                             edit: edit,
+                                             tags: tags });
+                    } else {
+                        if (edit) {
+                            res.redirect("/item/" + req.params.id);
+                        } else {
+                            res.render("item", { authenticated: false,
+                                                 item: rows ? rows[0] : null,
+                                                 ownItem: false,
+                                                 tags: tags });
+                        }
+                    }
+                    connection.end();
                 }
-            }
-            connection.end();
+            )
         }
     )
 }
@@ -397,15 +416,57 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
             }
         }
         query += "Description = '" + req.body.Description+ "'";
-        // TODO add tags once autocomplete is in
+        var tagsConnection = makeSQLConnection();
+        tagsConnection.query("SELECT * FROM Tags",
+            function(err, rows, fields) {
+                var tagDict = {};
+                for (var r in rows) {
+                    tagDict[rows[r].Tag_Name] = rows[r].Tag_ID;
+                }
+                tagsConnection.query("SELECT * FROM Pairings WHERE Listing_ID = " + req.params.id,
+                    function(err, rows, fields) {
+                        var tagIDs = [];
+                        for (var r in rows) {
+                            tagIDs.push(rows[r].Tag_ID);
+                        }
+                        var toAdd = [];
+                        var toKeep = [];
+                        var toRemove = [];
+                        var newTags = req.body.SelectedTags.split(",")
+                        for (var t in newTags) {
+                            var id = tagDict[newTags[t]];
+                            if (id) {
+                                var index = tagIDs.indexOf(id);
+                                if (index > -1) {
+                                    toKeep.push(id);
+                                } else {
+                                    toAdd.push(id);
+                                }
+                            }
+                        }
+                        for (var t in tagIDs) {
+                            var index = toKeep.indexOf(tagIDs[t]);
+                            if (index == -1) {
+                                toRemove.push(tagIDs[t]);
+                            }
+                        }
+                        for (var a in toAdd) {
+                            tagsConnection.query("INSERT INTO Pairings (`Tag_ID`, `Listing_ID`) VALUES ('" + toAdd[a] + "', '" + req.params.id + "')")
+                        }
+                        for (var d in toRemove) {
+                            tagsConnection.query("DELETE FROM Pairings WHERE Tag_ID = " + toRemove[d] + " AND Listing_ID = " + req.params.id)
+                        }
+                        tagsConnection.end();
+                    })
+            })
         query += "WHERE Listing_ID = " + req.params.id + ";";
         connection.query(query,
             function(err, rows, fields) {
                 console.log(err);
                 res.redirect("/item/" + req.params.id);
-                connection.end()
             }
         )
+        connection.end()
     }
 )
 
@@ -475,6 +536,23 @@ app.post("/add-item", connect.ensureLoggedIn(),
                         } else {
                             connection.end();
                         }
+                        var tagsConnection = makeSQLConnection();
+                        var tags = req.body.SelectedTags.split(",");
+                        tagsConnection.query("SELECT * FROM Tags",
+                            function(err, tagRows, fields) {
+                                var tagDict = {};
+                                for (var r in tagRows) {
+                                    tagDict[tagRows[r].Tag_Name] = tagRows[r].Tag_ID;
+                                }
+                                for (var i = 0; i < tags.length; i++) {
+                                    var Tag_ID = tagDict[tags[i]];
+                                    if (Tag_ID) {
+                                        tagsConnection.query("INSERT INTO Pairings (`Tag_ID`, `Listing_ID`) VALUES ('" + Tag_ID + "', '" + rows.insertId + "')");
+                                    }
+                                }
+                                tagsConnection.end();
+                            }
+                        )
                     }
                 );
                 var success = true;
