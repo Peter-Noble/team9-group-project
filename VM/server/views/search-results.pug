@@ -22,9 +22,9 @@ block content
         .col-md-4
             h2 Refine search
             label Sort by
-            select#sortBy
-                option Date added (newest - oldest)
-                option Date added (oldest - newest)
+            select#sort(onchange='refineSearch(this.value)')
+                option(value="dateDSC") Date added (newest - oldest)
+                option(value="dateASC") Date added (oldest - newest)
                 option Distance (closest - furthest)
                 option Expiry date (furthest - closest)
                 option Expiry date (closest - furthest)
