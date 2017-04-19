@@ -12,11 +12,11 @@
                 .col-sm-6
                     h1 Give & Go
                 .col-sm-3
+                    button.navbar-toggle(type="button" data-toggle="collapse" data-target="#myNavbar")
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
                     .collapse.navbar-collapse
-                        button.navbar-toggle(type="button" data-toggle="collapse" data-target="#myNavbar")
-                            span.icon-bar
-                            span.icon-bar
-                            span.icon-bar
                         #myNavBar
                             ul.nav.navbar-nav.navbar-right
                                 if authenticated
@@ -37,14 +37,15 @@
                                         a(href="/login")
                                             span.glyphicon.glyphicon-log-in
                                             Login 
-                    
-                        
+
+
             .row
                 .col-sm-12
                     #headerSearch
                         form(method="GET" action="/search-results")#custom-search-input
                             .input-group
                                 input#searchtext(type="text" class="form-control input-lg" placeholder="Search" name="searchtext")
+                                input#postcode(type="text" class="form-control input-lg" placeholder="Postcode" name="postcode")
                                 input#sortBy(type="hidden" class="form-control" name="sortBy" value="dateDSC")
                                 span(class="input-group-btn")
                                     button(class="btn btn-info btn-lg" type="submit")

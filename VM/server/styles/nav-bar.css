@@ -56,8 +56,9 @@
     color: #ffffff;
 }
 #myNavBar {
+    float: right;
     min-height: 1px;
-    display: block;
+    display: inline-block;
 }
 
 img.logo{
@@ -65,9 +66,46 @@ img.logo{
     padding-left: 5px;
     padding-top: 5px;
 }
+
 form#custom-search-input{
     margin-bottom: 0px;
 }
+
 #headerSearch{
-    padding: 7 5 5 5;
+    padding: 7 5 7 5;
+}
+
+#custom-search-input{
+    padding: 0;
+}
+
+#custom-search-input input[name="searchtext"]{
+    height: 35px;
+    max-width: 65%;
+    display: inline-block;
+    padding: 0 16 0 16;
+}
+
+#custom-search-input input[name="postcode"]{
+    height: 35px;
+    max-width: 35%;
+    display: inline-block;
+    padding: 0 16 0 16;
+    border-left: 1px solid lightgray;
+}
+
+#custom-search-input button{
+    border-left: 0 none;
+}
+
+#custom-search-input button:hover{
+    border-left: 0 none;
+}
+
+.input-group-btn{
+    border-left: solid 1px lightgray;
+}
+
+.navbar-toggle .icon-bar{
+    background-color: #ffffff;
 }
