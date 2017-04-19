@@ -127,3 +127,4 @@ function refineSearch(sortParam){
     var newURL = smallURL.concat("sortBy=", sortParam);
     history.pushState(null, null, newURL);
 }
+
