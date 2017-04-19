@@ -259,7 +259,38 @@ app.get('/',
 app.get('/index',
     function(req, res){
         res.render('index', { authenticated: req.user ? true : false });
-    });
+    }
+);
+
+app.get("/api/recently-added",
+    function(req, res) {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        var connection = makeSQLConnection();
+        connection.query("SELECT * FROM Listings WHERE Status = 'Available' ORDER BY Added DESC LIMIT " + req.query.number,
+            function(err, rows, fields) {
+                var remaining = rows.length;
+                var data = [];
+                for (var i = 0; i < rows.length; i++) {
+                    data.push({item: rows[i]});
+                    (function(i) {
+                        connection.query("SELECT * FROM Tags, Pairings WHERE Pairings.Listing_ID = " + rows[i].Listing_ID + " AND Tags.Tag_ID = Pairings.Tag_ID",
+                            function(err, tags, fields) {
+                                data[i]["tags"] = tags;
+                                remaining--;
+                                if (remaining == 0) {
+                                    console.log(data);
+                                    var json = JSON.stringify({recentlyAdded: data});
+                                    res.end(json);
+                                    connection.end();
+                                }
+                            }
+                        )
+                    })(i);
+                }
+            }
+        )
+    }
+);
 
 // Allow user to check if they are authenticated
 app.get("/api/authenticated",
