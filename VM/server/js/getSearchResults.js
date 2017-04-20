@@ -1,19 +1,6 @@
 var searchRadiusPostcodeTimeout;
 
 $(document).ready(function() {
-
-    // had to copy this in from formatDateScript.pug as I wasn't sure how else to make prettyDate available
-    // for use in this script
-    function prettyDate(dateString){
-      //if it's already a date object and not a string you don't need this line:
-        var date = new Date(dateString);
-        var d = date.getDate();
-        var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
-        var m = monthNames[date.getMonth()];
-        var y = date.getFullYear();
-        return d+' '+m+' '+y;
-    }
-    
     // Render results
     function renderListings(){
         $.ajax({
@@ -21,11 +8,13 @@ $(document).ready(function() {
         data: {searchtext: text, sort: sortParam},
         success: function(data) {
             var parsedData = JSON.parse(data);
-            
+
             // Sorting results
             var sorted = sortBy(parsedData, sortParam);
             // End sorting
-            
+
+            drawList(sorted);
+
             $.each(sorted, function(index, item) {
                 var image = "";
                 if (item.Image != "") {
@@ -40,11 +29,12 @@ $(document).ready(function() {
                 listElem.appendTo('#results');
                 image.appendTo(listElem);
             })
-            mapItems = parsedData.map(
+            mapItems = sorted.map(
                 function(item, i) {
                     return {
                         position: {lat: item.Location.x, lng: item.Location.y},
-                        label: (i+1).toString()
+                        label: (i+1).toString(),
+                        title: item.item.Title
                     };
                 }
             );
@@ -52,7 +42,7 @@ $(document).ready(function() {
         }
     })
     }
-    
+
     // sorting function
     function sortBy(parsed, param){
         sorting = []
@@ -75,7 +65,7 @@ $(document).ready(function() {
         }
         return sorting;
     }
-    
+
     // Function for retrieving get parameters from url
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -93,7 +83,7 @@ $(document).ready(function() {
     };
     var text = getUrlParameter('searchtext');
     var sortParam = getUrlParameter('sortBy');
-    
+
     renderListings();
 
     $("#postcode").on("input", function(e) {
