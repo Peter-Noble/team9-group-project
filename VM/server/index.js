@@ -825,6 +825,11 @@ app.post('/update-postcode',
         );
     })
 
+app.get('/favicon.ico',
+    function(req, res) {
+        res.sendFile('images/favicon.ico');
+    })
+
 // Logs out...
 app.get('/logout',
     function(req, res){
