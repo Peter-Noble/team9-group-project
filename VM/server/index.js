@@ -10,9 +10,6 @@ var path = require('path');
 var request = require('request');
 var download = function(uri, filename, callback){
   request.head(uri, function(err, res, body){
-    console.log('content-type:', res.headers['content-type']);
-    console.log('content-length:', res.headers['content-length']);
-
     request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
   });
 };
@@ -81,16 +78,13 @@ passport.use(new FacebookStrategy({
                         postcode: rows[0].Post_code
         			};
                     download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
-                        function(){
-                            console.log("Profile picture updated");
-                        })
+                        function(){})
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     // Create profile and user
 
             		var insertConnection = makeSQLConnection();
 
-                    console.log("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')");
                     insertConnection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')",
                         function(err, userRows, fields) {
                             insertConnection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Photo`) VALUES (" + userRows.insertId + ", '" + profile.displayName + "', '" + userRows.insertId + ".jpg');",
@@ -104,9 +98,7 @@ passport.use(new FacebookStrategy({
                                     }
                                     insertConnection.end();
                                     download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
-                                        function(){
-                                            console.log("Profile picture added");
-                                        })
+                                        function(){})
                                     return cb(null, user);
                                 }
                             )
@@ -428,7 +420,6 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
         var query = "UPDATE Listings SET ";
         query += "Title = '" + req.body.Title + "', ";
         query += "Expiry = '" + req.body.Expiry + "', ";
-        console.log(req.body);
         if (req.body.img != "") {
             var imgPath = "";
             var extension = "";
@@ -441,7 +432,6 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
                 imgPath = pngPath;
                 extension = ".png";
             }
-            console.log(imgPath);
             if (imgPath != "") {
                 fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), req.params.id + extension));
                 query += "Image = '" + req.params.id + extension + "', ";
@@ -658,7 +648,6 @@ app.post('/register',
 
 app.post('/auth/update-profile',  connect.ensureLoggedIn(),
     function(req, res){
-        console.log("Update profile");
         var connection = makeSQLConnection();
         connection.query("UPDATE Users SET Post_Code = '" + req.body.Postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
             function(err, rows, fields) {
@@ -694,7 +683,6 @@ app.post('/auth/update-profile',  connect.ensureLoggedIn(),
 )
 
 app.post('/uploadImage', function(req, res){
-    console.log(req.sessionID);
     // create an incoming form object
     var form = new formidable.IncomingForm();
 
@@ -750,7 +738,6 @@ app.get("/search",
                                 data[i]["tags"] = tags;
                                 remaining--;
                                 if (remaining == 0) {
-                                    console.log(data);
                                     var json = JSON.stringify(data);
                                     res.end(json);
                                     connection.end();
