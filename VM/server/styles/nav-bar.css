@@ -127,3 +127,7 @@ form#custom-search-input{
     color: #F78A00;
 }
 
+.navbar nav{
+    margin-bottom: none !important;
+}
+
