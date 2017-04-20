@@ -7,9 +7,9 @@ $.ajax({
         mapItems = data.recentlyAdded.map(
             function(item, i) {
                 return {
-                    position: {lat: item.item.Location.x, lng: item.item.Location.y},
+                    position: {lat: item.Location.x, lng: item.Location.y},
                     label: (i+1).toString(),
-                    title: item.item.Title
+                    title: item.Title
                 };
             }
         );

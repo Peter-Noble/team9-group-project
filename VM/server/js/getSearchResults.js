@@ -15,26 +15,12 @@ $(document).ready(function() {
 
             drawList(sorted);
 
-            $.each(sorted, function(index, item) {
-                var image = "";
-                if (item.Image != "") {
-                    image = $('<img/>')
-                        .attr('src','images/listings/' + item.Image)
-                        .attr('style', 'height: 65px;');
-                } else {
-                    image = $('<img style="height: 65px;">');
-                }
-                var listElem = $('<li>');
-                $("<a href='/item/" + item.Listing_ID + "'><h3>" + item.Title + "</h3></a>" + "<p>" + prettyDate(item.Expiry) + "</p>").appendTo(listElem);
-                listElem.appendTo('#results');
-                image.appendTo(listElem);
-            })
             mapItems = sorted.map(
                 function(item, i) {
                     return {
                         position: {lat: item.Location.x, lng: item.Location.y},
                         label: (i+1).toString(),
-                        title: item.item.Title
+                        title: item.Title
                     };
                 }
             );
@@ -117,4 +103,3 @@ function refineSearch(sortParam){
     var newURL = smallURL.concat("sortBy=", sortParam);
     history.pushState(null, null, newURL);
 }
-
