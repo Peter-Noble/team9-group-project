@@ -739,6 +739,20 @@ app.get("/search",
     var connection = makeSQLConnection();
         connection.query("SELECT DISTINCT Listings.Listing_ID, User_ID, Added, Title, Expiry, Location, Status, Image FROM Listings, Pairings, Tags WHERE Status = 'Available' AND (Title LIKE '%" + req.query.searchtext + "%' OR (Listings.Listing_ID = Pairings.Listing_ID AND Pairings.Tag_ID = Tags.Tag_ID AND Tags.Tag_Name = '" + req.query.searchtext + "'));",
             function(err, rows, fields) {
+                (function(i) {
+                    connection.query("SELECT * FROM Tags, Pairings WHERE Pairings.Listing_ID = " + rows[i].Listing_ID + " AND Tags.Tag_ID = Pairings.Tag_ID",
+                        function(err, tags, fields) {
+                            data[i]["tags"] = tags;
+                            remaining--;
+                            if (remaining == 0) {
+                                console.log(data);
+                                var json = JSON.stringify({recentlyAdded: data});
+                                res.end(json);
+                                connection.end();
+                            }
+                        }
+                    )
+                })(i);
                 res.end(JSON.stringify(rows));
                 console.log(err);
                 connection.end();
