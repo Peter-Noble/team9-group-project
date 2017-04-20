@@ -1,0 +1,19 @@
+if myPastItems.length > 0
+    .row
+        .col-md-12
+            h3 My past items
+    .row
+        .col-md-12
+            .item-list
+                ul.list-inline
+                    each item in myPastItems
+                        li
+                            a(href="/item/"+item.Listing_ID)
+                                h3= item.Title
+                            p= prettyDate(item.Expiry)
+
+                            if item.Image
+                                img(src="/images/listings/"+item.Image style="height: 65px")
+                            else
+
+                                img(style="height: 65px")

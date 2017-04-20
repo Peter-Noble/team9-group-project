@@ -354,13 +354,18 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
             function(err, rows, fields) {
                 connection.query("SELECT * FROM Listings WHERE Status = 'Reserved' AND Collector_ID = '" + req.user.id + "'",
                     function(err, pending, fields) {
-                        res.render("profile", { username : req.user.displayName,
-                                                authenticated: req.user ? true : false,
-                                                postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                                myRecentItems: rows,
-                                                myPendingItems: pending,
-                                                user: req.user});
-                        connection.end();
+						connection.query("SELECT * FROM Listings WHERE User_ID = " + req.user.id + " AND Status IN ('Collected','Removed') ORDER BY Expiry ASC",
+							function(err, past, fields) {
+								res.render("profile", { username : req.user.displayName,
+														authenticated: req.user ? true : false,
+														postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+														myRecentItems: rows,
+														myPendingItems: pending,
+														myPastItems: past,
+														user: req.user});
+								connection.end();
+							}
+						)
                     }
                 )
             }
@@ -506,6 +511,28 @@ app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
                         connection.end();
                         console.log(err);
                         // TODO new item claimed. Send notification.
+                    });
+                } else {
+                    connection.end();
+                }
+                res.redirect("/item/" + req.params.id);
+            }
+        )
+    }
+)
+
+// Make a request to remove an item
+app.post("/auth/remove-item/:id", connect.ensureLoggedIn(),
+    function(req, res) {
+        var connection = makeSQLConnection();
+        var available = "SELECT * FROM Listings WHERE Listing_ID = '" + req.params.id + "';";
+        connection.query(available,
+            function(err, rows, fields) {
+                if (rows[0].User_ID == req.user.id) {
+                    var query = "UPDATE Listings SET Status = 'Removed' WHERE Listing_ID = " + req.params.id + ";";
+                    connection.query(query, function(err, rows, fields){
+                        connection.end();
+                        console.log(err);
                     });
                 } else {
                     connection.end();

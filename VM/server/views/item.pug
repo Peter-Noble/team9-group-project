@@ -36,6 +36,7 @@ block content
                             else
 
                                 img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
+                        button(class="btn btn-info btn-lg" type="submit"  formaction="/auth/remove-item/" + item.Listing_ID) Remove
                     else if authenticated
                         button(class="btn btn-info btn-lg" id="claim" type="submit" formaction="/auth/claim-item/" + item.Listing_ID) Claim
                             if item.Photo
