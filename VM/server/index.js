@@ -251,6 +251,8 @@ app.set('view engine', 'pug');
 
 // Define routes.
 
+app.use(require("serve-favicon")(path.join(__dirname,'images','favicon.ico')));
+
 app.get('/',
     function(req, res) {
         res.redirect('index');
@@ -823,11 +825,6 @@ app.post('/update-postcode',
                 }
             }
         );
-    })
-
-app.get('/favicon.ico',
-    function(req, res) {
-        res.sendFile('images/favicon.ico');
     })
 
 // Logs out...
