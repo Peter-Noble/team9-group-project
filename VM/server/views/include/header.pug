@@ -5,8 +5,8 @@ nav.navbar.navbar-inverse
                 button.navbar-toggle(type="button" data-toggle="collapse" data-target="#myNavbar")
                     span.icon-bar
                     span.icon-bar
-                    span.icon-bar                        
-                a(href="#")
+                    span.icon-bar
+                a(href= authenticated ? "/auth/home" : "/index")
                     img.logo(src="/styles/assets/Logo35.png")
                 |Give & Go
             .collapse.navbar-collapse#myNavbar
@@ -37,7 +37,7 @@ nav.navbar.navbar-inverse
                         li
                             a(href="/auth/profile")
                                 span.glyphicon.glyphicon-user.header
-                                |  Profile 
+                                |  Profile
                     else
                         li
                             a(href="/registration")
@@ -52,7 +52,11 @@ nav.navbar.navbar-inverse
                 form(method="GET" action="/search-results")#custom-search-input
                     .input-group
                         input#searchtext(type="text" class="form-control input-lg" placeholder="Search" name="searchtext")
-                        input#postcode(type="text" class="form-control input-lg" placeholder="Postcode" name="postcode")
+                        if authenticated && user.postcode != ""
+                            input#postcode(type="text" class="form-control input-lg" placeholder="Postcode" name="postcode", value=user.postcode)
+                        else
+
+                            input#postcode(type="text" class="form-control input-lg" placeholder="Postcode" name="postcode")
                         input#sortBy(type="hidden" class="form-control" name="sortBy" value="dateDSC")
                         span(class="input-group-btn")
                             button(class="btn btn-info btn-lg" type="submit")
