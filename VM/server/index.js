@@ -65,7 +65,7 @@ passport.use(new Strategy(
 passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
-    callbackURL: "http://127.0.0.1:80/auth/facebook/callback",
+    callbackURL: "http://ec2-35-176-18-199.eu-west-2.compute.amazonaws.com/auth/facebook/callback",
     profileFields: ['id', 'displayName', 'emails', 'photos']
     }, function(token, refreshToken, profile, cb) {
 		var connection = makeSQLConnection();
