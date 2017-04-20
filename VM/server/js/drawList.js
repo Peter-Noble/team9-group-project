@@ -17,9 +17,9 @@ function drawList(data) {
         var row = $("<div class='row'>");
         row.appendTo('#results');
         var image = "";
-        if (item.item.Image != "") {
+        if (item.Image != "") {
             image = $('<img/>')
-                .attr('src','/images/listings/' + item.item.Image)
+                .attr('src','/images/listings/' + item.Image)
                 .attr('style', 'height: 65px;');
         } else {
             image = $('<img style="height: 65px;">');
@@ -29,7 +29,7 @@ function drawList(data) {
         image.appendTo(left);
         var right = $("<div class='col-sm-8'>");
         right.appendTo(row);
-        $("<a href='/item/" + item.item.Listing_ID + "'><h3>" + item.item.Title + "</h3></a>" + "<p>" + prettyDate(item.item.Expiry) + "</p>").appendTo(right);
+        $("<a href='/item/" + item.Listing_ID + "'><h3>" + item.Title + "</h3></a>" + "<p>" + prettyDate(item.Expiry) + "</p>").appendTo(right);
         for (var t = 0; t < item.tags.length; t++) {
             $("<span class='label label-success'>").text(item.tags[t].Tag_Name).appendTo(right);
         }
