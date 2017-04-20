@@ -30,41 +30,58 @@
     font-size: 23px;
 }
 
-.navbar {
+.navbar-brand{
+    padding: 5px 5px;
+}
+
+.logo{
+    padding: 5px 5px 5px 5px;
+    float: left;
+}
+.navbar-inverse {
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 0px;
     background-color: #2A70D7;
 }
 
-.navbar h1 {
+.navbar-inverse .navbar-toggle {
+    border: none;
+}
+
+.navbar-inverse .navbar-toggle:hover, 
+.navbar-inverse .navbar-toggle:focus {
+    border: none;
+    background-color: #ffffff;
+}
+
+.navbar-inverse .navbar-toggle:hover > .icon-bar,
+.navbar-inverse .navbar-toggle:focus > .icon-bar{
+    border: none;
+    background-color: #2A70D7;
+}
+
+.navbar .navbar-nav>li>a{
+    color: #ffffff;
+}
+
+.navbar-inverse .navbar-collapse {
+    border: none;
+}
+
+.brand{
+    line-height: 30px;
+    font-size: 30px;
+    display: inline-block;
     color: #ffffff;
     text-align: center;
-    vertical-align: middle;
-    margin-top: 10px;
-    margin-bottom: 0px;
 }
 
-.nav>li>a:hover, .nav>li>a:focus{
-    background-color: #2A70D7;
-    color: #F78A00;
-}
-
-.navbar a{
+.navbar-header {
+    font-size: 30px;
     color: #ffffff;
-}
-
-.navbar a:hover{
-    text-decoration: none;
-    color: #ffffff;
-}
-#myNavBar {
-    float: right;
-    min-height: 1px;
-    display: inline-block;
-}
-
-img.logo{
-    float: left;
-    padding-left: 5px;
-    padding-top: 5px;
+    text-align: center;
+    line-height: 50px;
 }
 
 form#custom-search-input{
@@ -72,7 +89,7 @@ form#custom-search-input{
 }
 
 #headerSearch{
-    padding: 7 5 7 5;
+    padding: 0 5 7 5;
 }
 
 #custom-search-input{
@@ -106,6 +123,7 @@ form#custom-search-input{
     border-left: solid 1px lightgray;
 }
 
-.navbar-toggle .icon-bar{
-    background-color: #ffffff;
+.navbar .navbar-nav>li>a:hover{
+    color: #F78A00;
 }
+
