@@ -19,12 +19,15 @@ block content
                     label Post code:
                     input.form-control(type="text", name="Postcode", value=user.postcode)
             .col-md-4
-                if user.photo
-                    img(src="/images/profiles/"+user.photo style="max-height:150px")
-                br
                 .control-group
                     label(for='img') Image:
-                    input#pictureUpload.form-control(type='file' name="img")
+                    br
+                    if user.photo
+                        img(src="/images/profiles/"+user.photo style="max-height:150px")
+                    br
+                    br
+                    if user.type == "Local"
+                        input#pictureUpload.form-control(type='file' name="img")
                 script(src="/js/imageUpload.js")
                 br
                 button.btn.btn-primary(type='submit') Update profile
