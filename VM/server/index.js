@@ -65,7 +65,7 @@ passport.use(new Strategy(
 passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
-    callbackURL: "http://127.0.0.1:8080/auth/facebook/callback",
+    callbackURL: "http://127.0.0.1:80/auth/facebook/callback",
     profileFields: ['id', 'displayName', 'emails', 'photos']
     }, function(token, refreshToken, profile, cb) {
 		var connection = makeSQLConnection();
@@ -169,7 +169,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var passportSocketIo = require('passport.socketio');
 var cookieParser = require('cookie-parser');
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 var expressSession = require('express-session');
 server.listen(port);
 
@@ -278,7 +278,6 @@ app.get("/api/recently-added",
                                 data[i]["tags"] = tags;
                                 remaining--;
                                 if (remaining == 0) {
-                                    console.log(data);
                                     var json = JSON.stringify({recentlyAdded: data});
                                     res.end(json);
                                     connection.end();
@@ -838,4 +837,4 @@ app.use('/js', express.static("js"));
 // Serve any files in the public directory.
 app.use('/images', express.static("images"));
 
-//app.listen(8080);
+//app.listen(80);
