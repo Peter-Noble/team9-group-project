@@ -1,7 +1,23 @@
 #footer-style {
+}
+#copyright-style p{
+  color: darkgrey;
+  text-align: center;
+  vertical-align: middle;
 
 }
 
+.footer-left{
+  float:left;
+  text-align: left;
+}
+
+.footer-bar{
+  background-color: #2A70D7;
+  border-radius: 0px;
+  border: 1px solid transparent;
+  min-height: 50px;
+}
 #footer-style p {
-    
+  color: white;
 }

@@ -1,4 +1,7 @@
-footer
-    #footer-style
-        p Start of footer
-        p Created by Durham students
+footer.footer-bar
+  .footer-left
+      a(href= authenticated ? "/auth/home" : "/index")
+        img.logo(src="/styles/assets/Logo35.png")
+
+  #copyright-style
+    p ©Give&Go 2017 Durham University
