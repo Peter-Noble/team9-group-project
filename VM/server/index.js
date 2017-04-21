@@ -10,9 +10,6 @@ var path = require('path');
 var request = require('request');
 var download = function(uri, filename, callback){
   request.head(uri, function(err, res, body){
-    console.log('content-type:', res.headers['content-type']);
-    console.log('content-length:', res.headers['content-length']);
-
     request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
   });
 };
@@ -65,7 +62,7 @@ passport.use(new Strategy(
 passport.use(new FacebookStrategy({
     clientID: "387146781677625",
     clientSecret: "43da58bad70251cce0db1a0a48f3f52d",
-    callbackURL: "http://127.0.0.1:8080/auth/facebook/callback",
+    callbackURL: "http://ec2-35-176-18-199.eu-west-2.compute.amazonaws.com/auth/facebook/callback",
     profileFields: ['id', 'displayName', 'emails', 'photos']
     }, function(token, refreshToken, profile, cb) {
 		var connection = makeSQLConnection();
@@ -81,16 +78,13 @@ passport.use(new FacebookStrategy({
                         postcode: rows[0].Post_code
         			};
                     download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
-                        function(){
-                            console.log("Profile picture updated");
-                        })
+                        function(){})
         			return cb(null, user);
                 } else if (!err && rows.length == 0) {
                     // Create profile and user
 
             		var insertConnection = makeSQLConnection();
 
-                    console.log("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')");
                     insertConnection.query("INSERT INTO Users (`User_ID`, `Username`, `Email`, `Password`, `Type`) VALUES (NULL, '" + profile.id + "', '" + profile.emails[0].value + "', '', 'Facebook')",
                         function(err, userRows, fields) {
                             insertConnection.query("INSERT INTO Profiles (`User_ID`, `Forename`, `Photo`) VALUES (" + userRows.insertId + ", '" + profile.displayName + "', '" + userRows.insertId + ".jpg');",
@@ -104,9 +98,7 @@ passport.use(new FacebookStrategy({
                                     }
                                     insertConnection.end();
                                     download(profile.photos[0].value, "images/profiles/"+user.id+".jpg",
-                                        function(){
-                                            console.log("Profile picture added");
-                                        })
+                                        function(){})
                                     return cb(null, user);
                                 }
                             )
@@ -169,7 +161,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var passportSocketIo = require('passport.socketio');
 var cookieParser = require('cookie-parser');
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 var expressSession = require('express-session');
 server.listen(port);
 
@@ -251,6 +243,8 @@ app.set('view engine', 'pug');
 
 // Define routes.
 
+app.use(require("serve-favicon")(path.join(__dirname,'images','favicon.ico')));
+
 app.get('/',
     function(req, res) {
         res.redirect('index');
@@ -278,7 +272,6 @@ app.get("/api/recently-added",
                                 data[i]["tags"] = tags;
                                 remaining--;
                                 if (remaining == 0) {
-                                    console.log(data);
                                     var json = JSON.stringify({recentlyAdded: data});
                                     res.end(json);
                                     connection.end();
@@ -361,13 +354,18 @@ app.get("/auth/profile", connect.ensureLoggedIn(),
             function(err, rows, fields) {
                 connection.query("SELECT * FROM Listings WHERE Status = 'Reserved' AND Collector_ID = '" + req.user.id + "'",
                     function(err, pending, fields) {
-                        res.render("profile", { username : req.user.displayName,
-                                                authenticated: req.user ? true : false,
-                                                postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
-                                                myRecentItems: rows,
-                                                myPendingItems: pending,
-                                                user: req.user});
-                        connection.end();
+						connection.query("SELECT * FROM Listings WHERE User_ID = " + req.user.id + " AND Status IN ('Collected','Removed') ORDER BY Expiry ASC",
+							function(err, past, fields) {
+								res.render("profile", { username : req.user.displayName,
+														authenticated: req.user ? true : false,
+														postcodeUpdate: req.user.postcode == "" || req.user.postcode == null ,
+														myRecentItems: rows,
+														myPendingItems: pending,
+														myPastItems: past,
+														user: req.user});
+								connection.end();
+							}
+						)
                     }
                 )
             }
@@ -427,7 +425,6 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
         var query = "UPDATE Listings SET ";
         query += "Title = '" + req.body.Title + "', ";
         query += "Expiry = '" + req.body.Expiry + "', ";
-        console.log(req.body);
         if (req.body.img != "") {
             var imgPath = "";
             var extension = "";
@@ -440,7 +437,6 @@ app.post("/auth/update-item/:id", connect.ensureLoggedIn(),
                 imgPath = pngPath;
                 extension = ".png";
             }
-            console.log(imgPath);
             if (imgPath != "") {
                 fs.rename(imgPath, path.join(path.join(__dirname, '/images/listings'), req.params.id + extension));
                 query += "Image = '" + req.params.id + extension + "', ";
@@ -515,6 +511,28 @@ app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
                         connection.end();
                         console.log(err);
                         // TODO new item claimed. Send notification.
+                    });
+                } else {
+                    connection.end();
+                }
+                res.redirect("/item/" + req.params.id);
+            }
+        )
+    }
+)
+
+// Make a request to remove an item
+app.post("/auth/remove-item/:id", connect.ensureLoggedIn(),
+    function(req, res) {
+        var connection = makeSQLConnection();
+        var available = "SELECT * FROM Listings WHERE Listing_ID = '" + req.params.id + "';";
+        connection.query(available,
+            function(err, rows, fields) {
+                if (rows[0].User_ID == req.user.id) {
+                    var query = "UPDATE Listings SET Status = 'Removed' WHERE Listing_ID = " + req.params.id + ";";
+                    connection.query(query, function(err, rows, fields){
+                        connection.end();
+                        console.log(err);
                     });
                 } else {
                     connection.end();
@@ -657,7 +675,6 @@ app.post('/register',
 
 app.post('/auth/update-profile',  connect.ensureLoggedIn(),
     function(req, res){
-        console.log("Update profile");
         var connection = makeSQLConnection();
         connection.query("UPDATE Users SET Post_Code = '" + req.body.Postcode.replace(/\s+/g, '') + "' WHERE User_ID = " + req.user.id + ";",
             function(err, rows, fields) {
@@ -693,7 +710,6 @@ app.post('/auth/update-profile',  connect.ensureLoggedIn(),
 )
 
 app.post('/uploadImage', function(req, res){
-    console.log(req.sessionID);
     // create an incoming form object
     var form = new formidable.IncomingForm();
 
@@ -749,7 +765,6 @@ app.get("/search",
                                 data[i]["tags"] = tags;
                                 remaining--;
                                 if (remaining == 0) {
-                                    console.log(data);
                                     var json = JSON.stringify(data);
                                     res.end(json);
                                     connection.end();
@@ -838,4 +853,4 @@ app.use('/js', express.static("js"));
 // Serve any files in the public directory.
 app.use('/images', express.static("images"));
 
-//app.listen(8080);
+//app.listen(80);
