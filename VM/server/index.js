@@ -555,12 +555,9 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
 app.get("/search-barcode", connect.ensureLoggedIn(),
     function(req, res) {
         var barcode = req.query.barcode;
-        console.log(req.query);
-        console.log(barcode);
         var url = "http://api.upcdatabase.org/json/933cc524178255ceb59f433c7fb940d6/" + barcode;
         request(url, function(err, response, body) {
             data = JSON.parse(body);
-            console.log(data);
             if (data.itemname.trim() != "") {
                 res.render("add-item", { username : req.user.displayName,
                                          authenticated: req.user ? true : false,
