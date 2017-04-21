@@ -131,3 +131,7 @@ form#custom-search-input{
     margin-bottom: none !important;
 }
 
+.navbar {
+    margin-bottom: 0px;
+}
+

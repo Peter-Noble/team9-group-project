@@ -1,0 +1,41 @@
+.refine {
+    border-right: 1px solid #eee;
+}
+
+#sort {
+    width: 84%;
+}
+
+#results {
+    padding-left: 0px;
+}
+
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.item-image {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    box-shadow: 3px 3px 5px #eee;
+    height: 100px;
+    width: 165px;
+    text-align: center;
+    vertical-align: middle;
+    float: left;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.thumb {
+    max-height: 100%;
+    max-width: 100%;
+    padding-top: auto;
+    padding-bottom: auto;
+}
+
+.item-title{
+    margin-top: 0px;
+    margin-bottom: 5px;
+}

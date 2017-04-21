@@ -18,20 +18,18 @@ function drawList(data) {
         row.appendTo('#results');
         var image = "";
         if (item.Image != "") {
-            image = $('<img/>')
-                .attr('src','/images/listings/' + item.Image)
-                .attr('style', 'height: 65px;');
+            image = $('<div class="item-image"><img class="thumb" src="/images/listings/' + item.Image + '"/></div>');
+//                .attr('src','/images/listings/' + item.Image);
+//                .attr('class', 'img-thumbnail');
         } else {
-            image = $('<img style="height: 65px;">');
+            image = $('<div class="item-image"><img class="thumb" src="/images/listings/placeholder.png"></div>');
         }
-        var left = $("<div class='col-sm-4'>");
-        left.appendTo(row);
-        image.appendTo(left);
-        var right = $("<div class='col-sm-8'>");
-        right.appendTo(row);
-        $("<a href='/item/" + item.Listing_ID + "'><h3>" + item.Title + "</h3></a>" + "<p>" + prettyDate(item.Expiry) + "</p>").appendTo(right);
+//        var left = $("<div class='col-sm-3'>");
+//        left.appendTo(row);
+        image.appendTo(row);
+        $("<a href='/item/" + item.Listing_ID + "'><h3 class='item-title'>" + item.Title + "</h3></a>" + "<p><b>" + prettyDate(item.Expiry) + "</b></p>"/*<p>" + item.description.substring(0,80) + "</p>"*/).appendTo(row);
         for (var t = 0; t < item.tags.length; t++) {
-            $("<span class='label label-success'>").text(item.tags[t].Tag_Name).appendTo(right);
+            $("<span class='label label-success'>").text(item.tags[t].Tag_Name).appendTo(row);
         }
     })
 }

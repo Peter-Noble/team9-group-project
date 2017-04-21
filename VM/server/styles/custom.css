@@ -1,0 +1,45 @@
+h1, 
+h2,
+h3,
+h4,
+h5,
+h6,
+a {
+    color: #2A70D7;
+    text-decoration: none;
+}
+
+h1:hover, 
+h2:hover,
+h3:hover,
+h4:hover,
+h5:hover,
+h6:hover,
+a:hover {
+    text-decoration: none;
+}
+
+a>h1:hover, 
+a>h2:hover,
+a>h3:hover,
+a>h4:hover,
+a>h5:hover,
+a>h6:hover{
+    color: #F78A00;
+    text-decoration: none;
+}
+
+.col-md-1,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-md-8,
+.col-md-9,
+.col-md-10,
+.col-md-11,
+.col-md-12 {
+    border: none;
+}
