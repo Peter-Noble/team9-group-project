@@ -10,24 +10,6 @@ nav.navbar.navbar-inverse
                     img.logo(src="/styles/assets/Logo35.png")
                 |Give & Go
             .collapse.navbar-collapse#myNavbar
-                //-
-                //-ul.nav.navbar-nav
-                    //-li.active
-                        //-a(href="#") Home
-                    //-li.dropdown
-                        //-a.dropdown-toggle(data-toggle="dropdown" href="#") Page 1
-                            //-span.caret
-                        //-ul.dropdown-menu
-                            //-li
-                                //-a(href="#") Page 1-1
-                            //-li
-                                //-a(href="#") Page 1-2
-                            //-li
-                                //-a(href="#") Page 1-3
-                    li
-                        a(href="#") Page 2
-                    li
-                        a(href="#") Page 3
                 ul.nav.navbar-nav.navbar-right
                     if authenticated
                         li
@@ -47,6 +29,13 @@ nav.navbar.navbar-inverse
                             a(href="/login")
                                 span.glyphicon.glyphicon-log-in
                                 |  Login
+                ul.nav.navbar-nav.navbar-right
+                    //-li.active
+                        //-a(href="#") Home
+                    li.dropdown
+                        a.dropdown-toggle(data-toggle="dropdown" href="#") Browse by tag
+                            span.caret
+                        ul.dropdown-menu#tagMenu
         .row
             #headerSearch
                 form(method="GET" action="/search-results")#custom-search-input
@@ -61,3 +50,4 @@ nav.navbar.navbar-inverse
                         span(class="input-group-btn")
                             button(class="btn btn-info btn-lg" type="submit")
                                 i(class="glyphicon glyphicon-search")
+script(src="/js/getTags.js")

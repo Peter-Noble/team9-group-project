@@ -135,3 +135,41 @@ form#custom-search-input{
     margin-bottom: 0px;
 }
 
+.navbar-inverse .navbar-nav>.open>a, 
+.navbar-inverse .navbar-nav>.open>a:focus, 
+.navbar-inverse .navbar-nav>.open>a:hover {
+    background-image: none;
+    color: #F78A00;
+    background-color: #2A70D7;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.dropdown-menu>li>a {
+    color: #ffffff;
+}
+
+.navbar-nav>li>.dropdown-menu {
+    border: none;
+    background-color: #2A70D7;
+}
+
+.dropdown-menu>li>a:focus,
+.dropdown-menu>li>a:hover {
+    background-image: none;
+    background-color: #ffffff;
+    color: #2A70D7;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+    text-shadow: none;
+}
+
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
+    color: #ffffff;
+}
+
+.navbar-inverse .navbar-nav .open .dropdown-menu>li>a:hover {
+    color: #2A70D7;
+    background-color: #ffffff;
+}
