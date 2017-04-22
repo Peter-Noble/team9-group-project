@@ -4,6 +4,7 @@ $.get("/api/all-tags", function(data) {
     for (var i in data) {
         tags.push(data[i].Tag_Name);
     }
+    updateTagsDropdown();
 })
 
 var input = $("#tagInput").get(0);
@@ -29,12 +30,14 @@ RegExp.escape = function (s) {
 
 function updateTagsDropdown() {
     var dropdown = $(".dropdown").get(0);
-    dropdown.style.display = "none";
+    $(".dropdown").hide();
+    //dropdown.style.display = "none";
 
     optionsVal.options.length = 0;
 
     if (input.value) {
-        dropdown.style.display = "block";
+        $(".dropdown").show();
+        //dropdown.style.display = "block";
         optionsVal.size = 3;
         var text = input.value;
 

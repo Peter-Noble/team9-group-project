@@ -34,7 +34,7 @@ script(src="/js/validateNewItem.js")
                 input#selectedTagsSubmit(name="SelectedTags" type="text" hidden)
                 br
                 input.form-control#tagInput(type="text", name="Tags", autocomplete="on", placeholder="Search tags")
-                .dropdown(style="display: none")
+                .dropdown
                     select#tagsList(name="list")
                 script(src="/js/tagAutocomplete.js")
             .control-group
