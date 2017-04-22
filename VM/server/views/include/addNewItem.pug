@@ -1,17 +1,18 @@
 script(src="/js/validateNewItem.js")
 .row
     .col-md-12
+        form(method='GET' action='/search-barcode')#search-barcode-form
+          .control-group
+              label(for='barcode') Barcode:
+              .row
+                  .col-md-2
+                      input#barcode.form-control(type='text' placeholder='Manual input for now' name='barcode' value=bc)
+                  .col-md-2
+                      button.btn.btn-primary(type='submit') Search Barcode
         form(method='POST' action='/add-item')#add-item-form
             .control-group
-                label(for='barcode') Barcode:
-                .row
-                    .col-md-2
-                        input#barcode.form-control(type='text' placeholder='Manual input for now' name='barcode')
-                    .col-md-2
-                        button#search-barcode.btn.btn-primary(type="button") Search Barcode
-            .control-group
                 label(for='itemName') Item name:
-                input#itemName.form-control(type='text', placeholder='Item Name' name='itemName')
+                input#itemName.form-control(type='text', placeholder='Item Name' name='itemName' value=itemname)
             .control-group
                 label(for='location') Location:
                 input#location.form-control(type='text', value=postcode name='location')
@@ -42,4 +43,3 @@ script(src="/js/validateNewItem.js")
             button.btn.btn-primary(type='submit') List item
 
 script(src="/js/imageUpload.js")
-script(src="/js/searchBarcode.js")

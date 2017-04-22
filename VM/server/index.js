@@ -552,6 +552,37 @@ app.get("/auth/add-item", connect.ensureLoggedIn(),
     }
 )
 
+app.get("/search-barcode", connect.ensureLoggedIn(),
+    function(req, res) {
+        var barcode = req.query.barcode;
+        var url = "http://api.upcdatabase.org/json/933cc524178255ceb59f433c7fb940d6/" + barcode;
+        request(url, function(err, response, body) {
+            data = JSON.parse(body);
+            if (data.valid == 'true') {
+                if (data.itemname.trim() != "") {
+                    res.render("add-item", { username : req.user.displayName,
+                                             authenticated: req.user ? true : false,
+                                             postcode: req.user.postcode,
+                                             bc: barcode,
+                                             itemname: data.itemname});
+                } else if (data.description.trim() != "") {
+                    res.render("add-item", { username : req.user.displayName,
+                                             authenticated: req.user ? true : false,
+                                             postcode: req.user.postcode,
+                                             bc: barcode,
+                                             itemname: data.description});
+                }
+            } else {
+                res.render("add-item", { username : req.user.displayName,
+                                         authenticated: req.user ? true : false,
+                                         postcode: req.user.postcode,
+                                         bc: barcode,
+                                         itemname: 'Invalid barcode!'});
+            }
+        });
+    }
+)
+
 // Receives request to add new item to the listings
 app.post("/add-item", connect.ensureLoggedIn(),
     function(req, res) {

@@ -10,7 +10,7 @@ $(document).ready(function() {
             }
             console.log(tags);
             for (var i = 0; i < tags.length; i++){
-                var tagForList = "<li><a href='#'>" + tags[i] + "</a></li>";
+                var tagForList = "<li><a href='/search-results?searchtext=" + tags[i] + "'>" + tags[i] + "</a></li>";
                 console.log(tagForList);
                 $("#tagMenu").append(tagForList);
             }
