@@ -10,6 +10,7 @@ function prettyDate(dateString){
 
 // data in format: {item: row from Listings, Tags: [rows from Tags]}
 function drawList(data) {
+    $("#results").empty();
     $.each(data, function(index, item) {
         if (index != 0) {
             $("<hr>").appendTo('#results');

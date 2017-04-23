@@ -95,11 +95,3 @@ $(document).ready(function() {
         searchRadiusCircle.setRadius(parseInt($("#searchRadius")[0].value) * 1000);
     })
 })
-
-function refineSearch(sortParam){
-    var url = document.location.toString();
-    var relativeURL = url.split("/").pop();
-    var smallURL = relativeURL.substring(0, relativeURL.indexOf("sortBy"));
-    var newURL = smallURL.concat("sortBy=", sortParam);
-    history.pushState(null, null, newURL);
-}
