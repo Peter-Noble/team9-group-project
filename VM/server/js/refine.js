@@ -13,9 +13,19 @@ function sort(parsed, param){
             sorting.sort(function(a, b){
                 return new Date(b.Added).getTime() - new Date(a.Added).getTime()});
             break;
+//        case "distance":
+//            sorting.sort(function(a, b){
+//                
+//            })
+        case "expiryDSC":
+            sorting.sort(function(a, b){
+                return new Date(b.Expiry).getTime() - new Date(a.Expiry).getTime()});
+            break;
+        
+        case "expriyASC":
         default:
             sorting.sort(function(a, b){
-                return new Date(a.Added).getTime() - new Date(b.Added).getTime()});
+                return new Date(a.Expiry).getTime() - new Date(b.Expiry).getTime()});
             break;
     }
     return sorting;

@@ -12,9 +12,9 @@ block content
             select#sort(onchange='refineSearch(this.value)')
                 option(value="dateDSC") Date added (newest - oldest)
                 option(value="dateASC") Date added (oldest - newest)
-                option Distance (closest - furthest)
-                option Expiry date (furthest - closest)
-                option Expiry date (closest - furthest)
+                option(value="distance") Distance (closest - furthest)
+                option(value="expiryDSC") Expiry date (furthest - closest)
+                option(value="expiryASC") Expiry date (closest - furthest)
             .control-group
                 br
                 label(for="postcode") Postcode:
