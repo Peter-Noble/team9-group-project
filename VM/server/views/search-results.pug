@@ -8,7 +8,7 @@ block content
     .row
         .col-md-4.refine
             h2 Refine search
-            label Sort by &nbsp;   
+            label.control-label Sort by &nbsp;   
             select#sort(onchange='refineSearch(this.value)')
                 option(value="dateDSC") Date added (newest - oldest)
                 option(value="dateASC") Date added (oldest - newest)
@@ -27,6 +27,8 @@ block content
                 br
                 label(for="radius") Radius km:
                 input#searchRadius.form-control(name="radius", type='number', value=5)
+                br
+                button.btn.btn-warning(type="submit") Refine
         .col-md-8.listings
             br
             ul#results

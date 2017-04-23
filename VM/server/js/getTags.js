@@ -8,7 +8,7 @@ $(document).ready(function() {
                 tags.push(data[i].Tag_Name);
             }
             for (var i = 0; i < tags.length; i++){
-                var tagForList = "<li><a href='/search-results?searchtext=" + tags[i] + "'>" + tags[i] + "</a></li>";
+                var tagForList = "<li><a href='/search-results?searchtext=" + tags[i] + "&sortBy=dateDSC'>" + tags[i] + "</a></li>";
                 $("#tagMenu").append(tagForList);
             }
         }
