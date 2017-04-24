@@ -819,11 +819,12 @@ app.get("/lat-long-from-postcode",
                     console.log(err);
                 }
                 res.writeHead(200, {"Content-Type": "application/json"});
-                if (data) {
+                console.log(data);
+                if (!("error" in data)) {
                     var json = JSON.stringify({"lat": data.result.latitude, "lng": data.result.longitude});
                     res.end(json);
                 } else {
-                    res.end();
+                    res.end(JSON.stringify({"err": "not full postcode"}));
                 }
             }
         )

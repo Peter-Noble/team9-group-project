@@ -15,13 +15,13 @@ function sort(parsed, param){
             break;
 //        case "distance":
 //            sorting.sort(function(a, b){
-//                
+//
 //            })
         case "expiryDSC":
             sorting.sort(function(a, b){
                 return new Date(b.Expiry).getTime() - new Date(a.Expiry).getTime()});
             break;
-        
+
         case "expriyASC":
         default:
             sorting.sort(function(a, b){
@@ -66,7 +66,7 @@ function refineSearch(sortParam){
     var smallURL = relativeURL.substring(0, relativeURL.indexOf("sortBy"));
     var newURL = smallURL.concat("sortBy=", sortParam);
     history.pushState(null, null, newURL);
-    
+
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
           sURLVariables = sPageURL.split('&'),
@@ -83,6 +83,6 @@ function refineSearch(sortParam){
     };
     var text = getUrlParameter('searchtext');
     var sortParam = getUrlParameter('sortBy');
-    
+
     getListings(text, sortParam);
 }

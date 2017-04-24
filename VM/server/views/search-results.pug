@@ -8,7 +8,7 @@ block content
     .row
         .col-md-4.refine
             h2 Refine search
-            label.control-label Sort by &nbsp;   
+            label.control-label Sort by &nbsp;
             select#sort(onchange='refineSearch(this.value)')
                 option(value="dateDSC") Date added (newest - oldest)
                 option(value="dateASC") Date added (oldest - newest)
@@ -19,20 +19,20 @@ block content
                 br
                 label(for="postcode") Postcode:
                 if user
-                    input#postcode.form-control(name="postcode", type='text', value=user.postcode)
+                    input#postcodeRefine.form-control(name="postcode", type='text', value=user.postcode)
                 else
 
-                    input#postcode.form-control(name="postcode", type='text', placeholder="postcode")
+                    input#postcodeRefine.form-control(name="postcode", type='text', placeholder="postcode")
             .control-group
                 br
                 label(for="radius") Radius km:
                 input#searchRadius.form-control(name="radius", type='number', value=5)
                 br
-                button.btn.btn-warning(type="submit") Refine
+                //button.btn.btn-warning(type="submit") Refine
         .col-md-8.listings
             br
             ul#results
-                
+
 
     script(src="/js/drawList.js")
     script(src="../js/getSearchResults.js")
