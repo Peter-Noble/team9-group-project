@@ -44,7 +44,6 @@ $(document).ready(function() {
                     url: "/lat-long-from-postcode",
                     data: {postcode: $("#postcodeRefine")[0].value},
                     success: function(data) {
-                        console.log(data);
                         if (!("err" in data)) {
                             searchCentre = data;
                             updateSearchArea({centre: data,
@@ -182,7 +181,6 @@ $(document).ready(function() {
                 url: "/lat-long-from-postcode",
                 data: {postcode: $("#postcodeRefine")[0].value},
                 success: function(data) {
-                    console.log(data);
                     if (!("err" in data)) {
                         searchCentre = data;
                         updateSearchArea({centre: data,

@@ -41,7 +41,6 @@ function getListings(text, sortParam){
 
         // Sorting results
         var sorted = sort(parsedData, sortParam);
-        console.log(sorted);
         // End sorting
 
         drawList(sorted);
