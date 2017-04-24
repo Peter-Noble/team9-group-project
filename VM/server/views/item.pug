@@ -15,6 +15,9 @@ block content
                             else
 
                                 img(src="/images/profiles/none.png"+item.Photo style="height: 46px")
+                        if authenticated && ownItem
+                            script(src="/js/markCollected.js")
+                            a#markCollected.btn.btn-info.btn-lg(onclick="markCollected(" + item.Listing_ID + ")") Mark as collected
                     else if item.Status != "Available"
                         a(class="btn btn-danger btn-lg") Not available
                             if item.Photo

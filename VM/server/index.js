@@ -521,6 +521,19 @@ app.post("/auth/claim-item/:id", connect.ensureLoggedIn(),
     }
 )
 
+app.post("/auth/mark-collected/:id", connect.ensureLoggedIn(),
+    function(req, res) {
+        console.log("GOT HERE");
+        var connection = makeSQLConnection();
+        var query = "UPDATE Listings SET Status = 'Collected' WHERE Listing_ID = " + req.params.id + ";";
+        connection.query(query, function(err, rows, fields){
+            connection.end();
+            console.log(err);
+        });
+        res.redirect("/item/" + req.params.id);
+    }
+)
+
 // Make a request to remove an item
 app.post("/auth/remove-item/:id", connect.ensureLoggedIn(),
     function(req, res) {
