@@ -58,7 +58,8 @@ $(document).ready(function() {
                                     return {
                                         position: {lat: item.Location.x, lng: item.Location.y},
                                         label: (i+1).toString(),
-                                        title: item.Title
+                                        title: item.Title,
+                                        url: "/item/" + item.Listing_ID
                                     };
                                 }
                             );
@@ -81,7 +82,8 @@ $(document).ready(function() {
                         return {
                             position: {lat: item.Location.x, lng: item.Location.y},
                             label: (i+1).toString(),
-                            title: item.Title
+                            title: item.Title,
+                            url: "/item/" + item.Listing_ID
                         };
                     }
                 );
@@ -157,7 +159,8 @@ $(document).ready(function() {
                                     return {
                                         position: {lat: item.Location.x, lng: item.Location.y},
                                         label: (i+1).toString(),
-                                        title: item.Title
+                                        title: item.Title,
+                                        url: "/item/" + item.Listing_ID
                                     };
                                 }
                             );
@@ -195,7 +198,8 @@ $(document).ready(function() {
                                 return {
                                     position: {lat: item.Location.x, lng: item.Location.y},
                                     label: (i+1).toString(),
-                                    title: item.Title
+                                    title: item.Title,
+                                    url: "/item/" + item.Listing_ID
                                 };
                             }
                         );

@@ -25,7 +25,11 @@ function updateMapSearchResults(searchResults) {
     deleteAllMarkers();
     markers = searchResults.map(
         function(result, i) {
-            return new google.maps.Marker(result);
+            var marker = new google.maps.Marker(result);
+            (function(marker, url) {
+                google.maps.event.addListener(marker, 'click', function() {window.location.href = url;});
+            })(marker, result.url);
+            return marker;
         }
     );
     markerCluster = new MarkerClusterer(map, markers,
