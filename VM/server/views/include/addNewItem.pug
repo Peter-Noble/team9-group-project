@@ -6,7 +6,7 @@ script(src="/js/validateNewItem.js")
               label(for='barcode') Barcode:
               .row
                   .col-md-2
-                      input#barcode.form-control(type='text' placeholder='Manual input for now' name='barcode' value=bc)
+                      input#barcode.form-control(type='text' placeholder='Manual input' name='barcode' value=bc)
                   .col-md-2
                       button.btn.btn-primary(type='submit') Search Barcode
         form(method='POST' action='/add-item')#add-item-form
